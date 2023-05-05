@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/bbcc.jpg >
+    <title>
+        bc&#39;s club
+    </title>
+    <meta name="description" content= 嘿，我是毕成～这是我的博客，欢迎访问！ >
+    <meta name="keywords" content= Blog,Hexo,Theme,毕成,bc970321 >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            MySQL
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="一、索引"><a href="#一、索引" class="headerlink" title="一、索引"></a>一、索引</h1><h2 id="1-B树和B-树"><a href="#1-B树和B-树" class="headerlink" title="1 B树和B+树"></a>1 B树和B+树</h2><h3 id="B树（B-树）特点"><a href="#B树（B-树）特点" class="headerlink" title="B树（B-树）特点"></a>B树（B-树）特点</h3><p>B树和B+树是平衡多路查找树（b是balance（平衡））</p>
+<ol>
+<li>每个根结点有多个叶子节点</li>
+<li>高度平衡，每个根节点高度一致</li>
+<li>高度小，查找速度较快</li>
+<li>所有节点遵循左小右大</li>
+</ol>
+<h3 id="B-树和B树的区别"><a href="#B-树和B树的区别" class="headerlink" title="B+树和B树的区别"></a>B+树和B树的区别</h3><ol>
+<li>所有结果只存储在叶子节点，所有根节点不存储数据。</li>
+<li>每个叶子节点都有指向下一个节点的指针。</li>
+</ol>
+<p>B+树特点：</p>
+<ol>
+<li>查询速度稳定，存储在叶子节点，查找次数相同</li>
+<li>遍历更快</li>
+<li>通过叶子节点存储指针，能满足空间局部性原理，如果存储器上某个位置被访问，那么它附近的位置也会被访问</li>
+</ol>
+<h2 id="2-各种类型的索引"><a href="#2-各种类型的索引" class="headerlink" title="2 各种类型的索引"></a>2 各种类型的索引</h2><h3 id="2-1-聚簇索引和非聚簇索引"><a href="#2-1-聚簇索引和非聚簇索引" class="headerlink" title="2.1 聚簇索引和非聚簇索引"></a>2.1 聚簇索引和非聚簇索引</h3><p>按照底层存储方式角度划分</p>
+<ol>
+<li><p>聚簇索引（聚集索引）<br> 索引结构和数据一起存放的索引，InnoDB的主键索引就属于聚簇索引（字典里的拼音）<br> 优点：</p>
+<ul>
+<li>查询速度快。相当于直接定位到了数据</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要数据有序</li>
+<li>更新代价大。更新数据，需要更新索引，需要更新索引里的数据。</li>
+</ul>
+</li>
+<li><p>非聚簇索引（非聚集索引）<br> 索引顺序和物理存储顺序不同（字典里的偏旁）<br> 优点：</p>
+<ul>
+<li>更新代价较小。叶子节点不存放数据</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要数据有序</li>
+<li>可能会需要二次查询，回表。（查的内容就在索引里就不需要回表，满足覆盖索引的条件）</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-2-主键索引和二级索引"><a href="#2-2-主键索引和二级索引" class="headerlink" title="2.2 主键索引和二级索引"></a>2.2 主键索引和二级索引</h3><ol>
+<li>主键索引<br> 加速查询，列值唯一（不可以为NULL），一张表只有一个主键</li>
+<li>唯一索引<br> 加速查询，列值唯一（可以有NULL），一张表可以有多个</li>
+<li>普通索引<br> 只能加速查询，允许值重复和有NULL，一张表可以有多个</li>
+<li>前缀索引<br> 只适用于字符串类型，对文本的前几个字符创建索引，比普通索引建立的数据更小</li>
+</ol>
+<h3 id="2-3-覆盖索引和联合索引"><a href="#2-3-覆盖索引和联合索引" class="headerlink" title="2.3 覆盖索引和联合索引"></a>2.3 覆盖索引和联合索引</h3><p>覆盖索引</p>
+<ul>
+<li>索引覆盖了查询内容</li>
+<li>比如：对列a、b做索引，只查a或者b不需要回表。</li>
+</ul>
+<p>联合索引（组合索引、复合索引）</p>
+<ul>
+<li>使用表中的多个字段创建索引</li>
+</ul>
+<h2 id="3-联合索引的最左前缀匹配原则和失效条件"><a href="#3-联合索引的最左前缀匹配原则和失效条件" class="headerlink" title="3 联合索引的最左前缀匹配原则和失效条件"></a>3 联合索引的最左前缀匹配原则和失效条件</h2><ul>
+<li>定义：按照最左优先的方式进行索引的匹配。</li>
+<li>示例：比如对a，b，c三列做索引，a、ab、abc可以使用索引，b、c、bc无法使用索引。</li>
+<li>结构：<br> 先按 a 排序，在 a 相同的情况再按 b 排序，在 b 相同的情况再按 c 排序。<br> 所以，b 和 c 是全局无序，局部相对有序的，这样在没有遵循最左匹配原则的情况下，是无法利用到索引的。</li>
+<li>联合索引失效条件：<ul>
+<li>不满足最左前缀原则</li>
+<li>在列上做操作：计算、函数、类型转换</li>
+<li>使用不等于、大于、小于，后边的会失效（a&gt;100 and b=1，此时b的索引失效，但a用到了）</li>
+<li>使用LIKE的时候，以%开头会导致索引失效</li>
+<li>字符串不加单引号</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-使用索引的规范"><a href="#4-使用索引的规范" class="headerlink" title="4 使用索引的规范"></a>4 使用索引的规范</h2><h2 id="MySQL索引规范"><a href="#MySQL索引规范" class="headerlink" title="MySQL索引规范"></a>MySQL索引规范</h2><ol>
+<li>在常用的查询中使用索引</li>
+<li>尽量使用覆盖索引，即在索引中包含查询所需的所有列，以避免回表操作。</li>
+<li>遵循最左前缀原则</li>
+</ol>
+<h2 id="什么情况不建议使用索引"><a href="#什么情况不建议使用索引" class="headerlink" title="什么情况不建议使用索引"></a>什么情况不建议使用索引</h2><ol>
+<li>where、group by、order by用不到的字段不加索引</li>
+<li>大量重复数据不建索引，例如性别</li>
+<li>谨慎为经常更新的表创建过多索引</li>
+<li>不建议使用无序的值作为索引</li>
+<li>数据量小的表最好不要使用索引，少于1000个</li>
+</ol>
+<h1 id="二、特性"><a href="#二、特性" class="headerlink" title="二、特性"></a>二、特性</h1><h2 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h2><p>InnoDB的默认级别是可重复读。<br> InnoDB的MVCC和next-key lock 可以避免幻读产生，已经可以完全保证事务的隔离性要求，达到可串行化的效果，并且不会有可串行化的更多的锁的性能损失。</p>
+<ul>
+<li>事物的原子性是通过undo log来保证。</li>
+<li>事务的隔离性是通过读写锁 + MVCC机制来实现的。</li>
+<li>事务的持久性是通过redo log来实现的。</li>
+</ul>
+<h2 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h2><p>MVCC是多版本并发控制，是InnoDB在可重复读隔离级别下事务的实现方式。<br> 一般情况下读读不需要锁，读写、写写都需要锁。用了MVCC后，在读写时不需要加锁，但可能读到历史数据。<br> MVCC实现基于：隐式字段、undo log、read view。</p>
+<h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><ul>
+<li>生成时间<ul>
+<li>事务开始之前</li>
+</ul>
+</li>
+<li>作用及内容<ul>
+<li>保存的是当前事物上一版本的数据，用于事物回滚数据、MVCC</li>
+</ul>
+</li>
+<li>使用的原因<ul>
+<li>事务执行过程中可能遇到各种错误，比如服务器本身的错误等。</li>
+<li>程序在执行过程中通过ROLLBACK取消当前事务的执行。</li>
+<li>可能已经执行一半就结束，但已经修改了很多数据，为了事务的原子性，需要把修改的数据给还原回来。</li>
+</ul>
+</li>
+<li>insert undo log<ul>
+<li>只在事务回滚时需要，并且在事务提交后可以被立即丢弃</li>
+</ul>
+</li>
+<li>update undo log<ul>
+<li>不仅在事务回滚时需要，在快照读时也需要；所以不能随便删除，只有在快速读或事务回滚不涉及该日志时，对应的日志才会被统一清除。</li>
+</ul>
+</li>
+<li>对同一行加锁时，undolog是链表，新的会放在旧的前边。</li>
+</ul>
+<h2 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h2><ul>
+<li>生成时间<ul>
+<li>事物开始之后（由于事物两阶段提交的原因，redolog会在事物执行过程中产生）</li>
+</ul>
+</li>
+<li>作用及内容<ul>
+<li>保存的是内存中修改的数据，用于数据库宕机后数据的恢复</li>
+</ul>
+</li>
+<li>刷盘策略<ul>
+<li>先写入redo log buffer 中，然后再按照一定频率刷新到redo log file</li>
+</ul>
+</li>
+</ul>
+<h2 id="两阶段提交协议"><a href="#两阶段提交协议" class="headerlink" title="两阶段提交协议"></a>两阶段提交协议</h2><ul>
+<li>准备阶段<ul>
+<li>协调者向参与者发起指令、参与者评估自己的状态。如果参与者评估指令可以完成，则会写undolog。然后锁定资源，执行操作，但是并不提交。</li>
+</ul>
+</li>
+<li>提交阶段<ul>
+<li>如果每个参与者明确返回准备成功，则协调者参与者发起提交指令，参与者提交资源变更的事物，释放锁定的资源。</li>
+<li>如果任何一个参与者明确返回准备失败，则协调者向参与者发起终止命令，参与者取消已变更的事物，执行undolog，释放锁定的资源</li>
+</ul>
+</li>
+</ul>
+<h1 id="三、架构、引擎"><a href="#三、架构、引擎" class="headerlink" title="三、架构、引擎"></a>三、架构、引擎</h1><h2 id="1-基础架构"><a href="#1-基础架构" class="headerlink" title="1 基础架构"></a>1 基础架构</h2><h3 id="MySQL如何执行一条SQL"><a href="#MySQL如何执行一条SQL" class="headerlink" title="MySQL如何执行一条SQL"></a>MySQL如何执行一条SQL</h3><ol>
+<li>客户端发起请求</li>
+<li>连接器（验证用户身份，给予权限）</li>
+<li>查询缓存（存在缓存则直接返回，不存在则执行后续操作）</li>
+<li>分析器（对SQL进行词法分析和语法分析操作）</li>
+<li>优化器（主要对执行的sql优化选择最优的执行方案）</li>
+<li>执行器（执行时会先看用户是否有执行权限，有才去使用这个引擎提供的接口）</li>
+<li>去存储引擎获取数据返回（如果开启查询缓存则会缓存查询结果）</li>
+</ol>
+<h2 id="2-存储引擎"><a href="#2-存储引擎" class="headerlink" title="2 存储引擎"></a>2 存储引擎</h2><p>存储引擎基于表，而不是数据库（比如同一个库下，a表是InnoDB，b表是MyISAM）。<br> 默认InnoDB。</p>
+<h3 id="2-1-MyISAM和InnoDB的区别"><a href="#2-1-MyISAM和InnoDB的区别" class="headerlink" title="2.1 MyISAM和InnoDB的区别"></a>2.1 MyISAM和InnoDB的区别</h3><ol>
+<li>MyISAM只支持表级锁，InnoDB还支持行级锁，默认为行级锁</li>
+<li>MyISAM不支持事物，InnoDB支持事物，默认可重复读。这个级别下解决幻读，是基于MVCC和Next-Key LOCK实现的。</li>
+<li>MyISAM不支持外键，InnoDB支持使用外键。但是一般情况下使用外键概念必须在应用层解决。</li>
+<li>InnoDB的redo log支持崩溃后的恢复，MyISAM不支持</li>
+<li>InnoDB支持MVCC，减少加锁操作，提高性能。</li>
+</ol>
+<h1 id="四、基本原理"><a href="#四、基本原理" class="headerlink" title="四、基本原理"></a>四、基本原理</h1><h2 id="事物的特性（ACID）"><a href="#事物的特性（ACID）" class="headerlink" title="事物的特性（ACID）"></a>事物的特性（ACID）</h2><ul>
+<li>原子性：一个事务中的所有操作，要么全部完成，要么全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，会被回滚到事务开始前的状态，就像这个事务从来没有被执行过一样。</li>
+<li>一致性：执行事务前后，数据库的完整性没有被破坏，写入的内容必须完全符合所有的预设规则。例如转账业务中，无论事务是否成功，转账者和收款人的总额应该是不变的。</li>
+<li>隔离性： 并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数据库是独立的。</li>
+<li>持久性： 一个事务被提交之后，对数据的修改就是永久的，即便系统故障也不会丢失。</li>
+</ul>
+<h2 id="脏读、幻读、不可重复读"><a href="#脏读、幻读、不可重复读" class="headerlink" title="脏读、幻读、不可重复读"></a>脏读、幻读、不可重复读</h2><ul>
+<li>脏读：读取到了未提交的事务数据。</li>
+<li>不可重复读：在同一事务中，两次查询同一个记录得到的结果不一致。</li>
+<li>幻读：在同一事务中，两次查询同一范围，后一次查询看到了前一次查询没有看到的行。</li>
+<li>脏读<br> 例如：变量为50，事物A要修改为100，A还未提交，事物B已经读取到了100。但此时发生回滚，数据库里的变量还是50而不是100，事物B读取到的和数据库真实的不一致。</li>
+<li>丢失修改<br> 例如：事物A和事物B都对变量修改，期望将结果+1的修改。t1时刻事物A获取变量值是50，t2时刻事物B也获取变量值是50。但事物A还未执行修改完毕，数据库最后的结果是51而不是52，事物A的修改丢失了。</li>
+<li>不可重复读<br> 例如：事物A对变量只读，事物B对变量修改。t1时刻事物A读取到变量结果是50，t2时刻事物B将结果修改为100，t3时刻事物A发现变量的结果发生改变。</li>
+<li>幻读<ol>
+<li>select 某记录是否存在——不存在。</li>
+<li>准备插入此记录</li>
+<li>但执行 insert 时发现此记录已存在，无法插入 此时就发生了幻读</li>
+</ol>
+</li>
+<li>不可重复读和幻读的区别：幻读是查询到的个数的区别，不可重复读是内容的区别。两者解决方案不一致，加的锁不一样。<ul>
+<li>不可重复读：UPDATE和DELETE，幻读：INSERT。</li>
+</ul>
+</li>
+</ul>
+<h2 id="事物隔离级别"><a href="#事物隔离级别" class="headerlink" title="事物隔离级别"></a>事物隔离级别</h2><ul>
+<li>未提交读：事务中发生了修改，即使没有提交，其他事务也是可见的。<ul>
+<li>可能会导致脏读、幻读或不可重复读。</li>
+</ul>
+</li>
+<li>提交读：可以避免未提交读发生的情况，只有提交后的才能被看到。<ul>
+<li>可以阻止脏读，但是幻读或不可重复读仍有可能发生。</li>
+</ul>
+</li>
+<li>可重复读：对一个记录读取多次的结果是相同的，除非数据是被本身事务自己所修改。<ul>
+<li>可以阻止脏读和不可重复读，但幻读仍有可能发生。</li>
+</ul>
+</li>
+<li>串行化：最高的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。<ul>
+<li>该级别可以防止脏读、不可重复读以及幻读。</li>
+</ul>
+</li>
+</ul>
+<p>InnoDB的默认级别是可重复读。<br> InnoDB的MVCC和next-key lock 可以避免幻读产生，已经可以完全保证事务的隔离性要求，达到可串行化的效果，并且不会有可串行化的更多的锁的性能损失。</p>
+<h1 id="五、锁"><a href="#五、锁" class="headerlink" title="五、锁"></a>五、锁</h1><ul>
+<li>行级锁、表级锁：行级锁开销大，冲突少，会死锁。表级锁开销小，冲突大，不会死锁</li>
+<li>共享锁、排他锁</li>
+<li>乐观锁、悲观锁</li>
+<li>next-key lock<ul>
+<li>间隙锁+行锁，能解决幻读的问题</li>
+</ul>
+</li>
+<li>gap lock间隙锁</li>
+</ul>
+<h1 id="六、使用"><a href="#六、使用" class="headerlink" title="六、使用"></a>六、使用</h1><h2 id="SQL执行的慢的原因和解决方法"><a href="#SQL执行的慢的原因和解决方法" class="headerlink" title="SQL执行的慢的原因和解决方法"></a>SQL执行的慢的原因和解决方法</h2><h3 id="该SQL偶尔执行慢"><a href="#该SQL偶尔执行慢" class="headerlink" title="该SQL偶尔执行慢"></a>该SQL偶尔执行慢</h3><ol>
+<li>在刷新脏页，redo log写满了需要直接写入磁盘</li>
+<li>执行的时候遇到了锁</li>
+</ol>
+<h3 id="该SQL一直执行慢"><a href="#该SQL一直执行慢" class="headerlink" title="该SQL一直执行慢"></a>该SQL一直执行慢</h3><ol>
+<li>没有用上索引，加索引、查看是否是对字段进行运算、函数，导致未用上索引。</li>
+<li>数据库自己选错了索引，可以用index某列强制走索引。</li>
+</ol>
+
+    </div>
+
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>版权所有 © 2020 | 作者: 毕成 | 主题 By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">本站浏览总访问量: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">本站访问人数: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="NOsswOncKgc8HOxqo9oxIWlX-gzGzoHsz">
+<input type="hidden" id="valine_appKey" value="z1FihjWEbS8uIfUQdmCtK7zz">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

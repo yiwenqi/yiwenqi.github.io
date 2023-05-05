@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/bbcc.jpg >
+    <title>
+        bc&#39;s club
+    </title>
+    <meta name="description" content= 嘿，我是毕成～这是我的博客，欢迎访问！ >
+    <meta name="keywords" content= Blog,Hexo,Theme,毕成,bc970321 >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            hexo使用指南
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="Hexo-日常使用指南"><a href="#Hexo-日常使用指南" class="headerlink" title="Hexo 日常使用指南"></a>Hexo 日常使用指南</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Hexo 是一个快速、简洁且高效的基于 Node.js 的静态博客框架，使用 Hexo，您可以使用 Markdown 等轻量级语言来撰写博客文章，并将其转换为静态页面进行展示，而不需要像传统博客系统那样依赖于数据库和服务器。Hexo 具有快速、简洁、高效等特点，非常适合个人博客、技术博客和文学博客等多种用途。</p>
+<h2 id="安装-Hexo"><a href="#安装-Hexo" class="headerlink" title="安装 Hexo"></a>安装 Hexo</h2><p>要使用 Hexo，您需要先安装 Node.js 和 Git，然后使用 npm（Node.js 包管理器）来安装 Hexo。以下是安装步骤：</p>
+<ol>
+<li><p>安装 Node.js：在 Node.js 官方网站下载并安装 Node.js。</p>
+</li>
+<li><p>安装 Git：在 Git 官方网站下载并安装 Git。</p>
+</li>
+<li><p>安装 Hexo：在命令行中执行以下命令安装 Hexo：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure></li>
+<li><p>初始化 Hexo：在命令行中执行以下命令初始化 Hexo：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo init blog</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> blog</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="创建文章"><a href="#创建文章" class="headerlink" title="创建文章"></a>创建文章</h2><p>使用 Hexo 创建文章非常简单，只需要在命令行中执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo new <span class="string">&quot;Hello World&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>其中，”Hello World” 是文章的标题，Hexo 会自动生成一个 Markdown 文件，保存在 <code>source/_posts</code> 目录下。您可以使用 Markdown 语法来撰写文章。</p>
+<h2 id="生成静态文件"><a href="#生成静态文件" class="headerlink" title="生成静态文件"></a>生成静态文件</h2><p>使用 Hexo 生成静态文件非常简单，只需要在命令行中执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo generate</span></span><br></pre></td></tr></table></figure>
+
+<p>Hexo 会根据您的配置文件和主题模板生成静态文件，保存在 <code>public</code> 目录下。</p>
+<h2 id="启动本地服务器"><a href="#启动本地服务器" class="headerlink" title="启动本地服务器"></a>启动本地服务器</h2><p>使用 Hexo 启动本地服务器非常简单，只需要在命令行中执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo server</span></span><br></pre></td></tr></table></figure>
+
+<p>然后在浏览器中访问 <a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000/</a> 即可查看博客。</p>
+<h2 id="部署博客"><a href="#部署博客" class="headerlink" title="部署博客"></a>部署博客</h2><p>使用 Hexo 部署博客非常简单，只需要在命令行中执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo deploy</span></span><br></pre></td></tr></table></figure>
+
+<p>然后 Hexo 会将静态文件部署到您指定的远程服务器或云平台。在部署前，您需要先配置 <code>_config.yml</code> 文件中的 <code>deploy</code> 部分。</p>
+<h2 id="清除缓存"><a href="#清除缓存" class="headerlink" title="清除缓存"></a>清除缓存</h2><p>在 Hexo 使用过程中，可能会产生一些缓存文件和已生成的静态文件。如果您想要清除这些文件，可以在命令行中执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo clean</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="安装主题"><a href="#安装主题" class="headerlink" title="安装主题"></a>安装主题</h2><p>Hexo 支持丰富的主题和插件，您可以根据自己的需求来选择和安装。以下是安装主题的步骤：</p>
+<ol>
+<li><p>在 Hexo 官方主题库中选择并下载主题。</p>
+</li>
+<li><p>将主题解压缩到 <code>themes</code> 目录下。</p>
+</li>
+<li><p>修改配置文件 <code>_config.yml</code> 中的 <code>theme</code> 字段为您所安装的主题名称。</p>
+</li>
+<li><p>在命令行中执行以下命令重新生成静态文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo generate</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="使用插件"><a href="#使用插件" class="headerlink" title="使用插件"></a>使用插件</h2><p>Hexo 支持丰富的插件，可以帮助您更好地管理博客内容、优化博客性能、增强博客功能等。以下是使用插件的步骤：</p>
+<ol>
+<li><p>在 Hexo 插件库中选择并安装插件。</p>
+</li>
+<li><p>修改配置文件 <code>_config.yml</code> 中的 <code>plugins</code> 字段，添加您所安装的插件。</p>
+</li>
+<li><p>在命令行中执行以下命令重新生成静态文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo generate</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Hexo 是一个简单、快速、高效的静态博客框架，可以帮助您快速搭建个人博客、技术博客和文学博客等，同时还支持丰富的主题和插件，可以帮助您更好地管理博客内容、优化博客性能、增强博客功能等。</p>
+
+    </div>
+
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>版权所有 © 2020 | 作者: 毕成 | 主题 By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">本站浏览总访问量: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">本站访问人数: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="NOsswOncKgc8HOxqo9oxIWlX-gzGzoHsz">
+<input type="hidden" id="valine_appKey" value="z1FihjWEbS8uIfUQdmCtK7zz">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

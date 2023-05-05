@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/bbcc.jpg >
+    <title>
+        bc&#39;s club
+    </title>
+    <meta name="description" content= 嘿，我是毕成～这是我的博客，欢迎访问！ >
+    <meta name="keywords" content= Blog,Hexo,Theme,毕成,bc970321 >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            Redis
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="一、基础"><a href="#一、基础" class="headerlink" title="一、基础"></a>一、基础</h1><h2 id="1-什么是Redis"><a href="#1-什么是Redis" class="headerlink" title="1 什么是Redis"></a>1 什么是Redis</h2><ol>
+<li>redis是一个将数据存储在内存中的数据库，读写速度非常快，存储的是键值对</li>
+<li>redis支持数据的持久化，可以将内存中的数据保存到磁盘中，重启的时候可以再次加载进行使用</li>
+<li>redis不仅支持简单的kv类型的数据，还提供list，set，zset，hash等数据结构的存储</li>
+<li>redis支持数据的备份，即master-slave模式的数据备份</li>
+</ol>
+<h2 id="2-Redis为什么这么快"><a href="#2-Redis为什么这么快" class="headerlink" title="2 Redis为什么这么快"></a>2 Redis为什么这么快</h2><ol>
+<li>redis完全基于内存</li>
+<li>redis有高效的事件处理模型，主要是单线程事件循环和IO多路复用<ul>
+<li>单线程可以避免了上下文切换和竞争，不需要锁</li>
+<li>是多路IO模型，非阻塞IO（阻塞IO会一直占用CPU，多路复用IO单个线程就可以同时处理多个IO请求）</li>
+</ul>
+</li>
+<li>redis内置了多种优化过后的数据结构实现，性能非常高</li>
+</ol>
+<h2 id="3-为什么要用Redis"><a href="#3-为什么要用Redis" class="headerlink" title="3 为什么要用Redis"></a>3 为什么要用Redis</h2><ol>
+<li>高性能<br> Redis和传统数据库存在磁盘中相比，直接使用内存，速度非常快</li>
+<li>高并发<br> MySQL能达到一万QPS，<br> Redis能达到十万QPS到三十万QPS</li>
+</ol>
+<h3 id="3-1-redis适合的场景"><a href="#3-1-redis适合的场景" class="headerlink" title="3.1 redis适合的场景"></a>3.1 redis适合的场景</h3><ol>
+<li>缓存：减轻MySQL查询压力，提高性能</li>
+<li>排行榜：利用redis的SortSet（有序集合）实现</li>
+<li>计数器：利用Redis的自增操作，可以统计点赞数、页面访问数</li>
+<li>限速器：</li>
+<li>好友关系：利用集合的一些命令，求交集、并集、差集，解决共同好友、共同爱好问题</li>
+<li>消息队列：用list完成异步解藕</li>
+<li>session共享：客户登录任意一台机器都可以获得session信息</li>
+</ol>
+<h3 id="3-2-redis常见的功能"><a href="#3-2-redis常见的功能" class="headerlink" title="3.2 redis常见的功能"></a>3.2 redis常见的功能</h3><ol>
+<li>支持数据缓存</li>
+<li>支持分布式锁</li>
+<li>支持数据持久化</li>
+<li>支持事务（不满足原子性和持久性）</li>
+<li>支持消息队列（异步处理，应用解耦，流量削峰和消息通讯），一般没人用</li>
+</ol>
+<h1 id="二、内存"><a href="#二、内存" class="headerlink" title="二、内存"></a>二、内存</h1><h2 id="1-设置过期时间"><a href="#1-设置过期时间" class="headerlink" title="1 设置过期时间"></a>1 设置过期时间</h2><ol>
+<li>设置过期时间减少内存消耗，绝大部分数据不需要一直保存</li>
+<li>传统的数据库判断数据是否过期性能非常差</li>
+<li>使用expire设置过期时间，字符串使用setex设置过期时间，persist移除一个键的过期时间，ttl查看还有多久过期</li>
+</ol>
+<h2 id="2-Redis如何判断数据是否过期"><a href="#2-Redis如何判断数据是否过期" class="headerlink" title="2 Redis如何判断数据是否过期"></a>2 Redis如何判断数据是否过期</h2><p>过期字典</p>
+<ol>
+<li>过期字典保存了数据库中所有键的过期时间</li>
+<li>过期字典的key是一个指针</li>
+<li>value是long long类型，保存了该键过期时间</li>
+</ol>
+<h2 id="3-过期数据的删除策略"><a href="#3-过期数据的删除策略" class="headerlink" title="3 过期数据的删除策略"></a>3 过期数据的删除策略</h2><ol>
+<li>定时删除<ul>
+<li>在设置键的过期时间的同时，创建一个定时器，通过定时器执行对键的删除操作</li>
+<li>内存友好，对CPU时间不友好（执行删除占用时间）</li>
+</ul>
+</li>
+<li>惰性删除<ul>
+<li>每次从键空间获取键时，都检查是否过期，过期就删除</li>
+<li>CPU时间友好，内存不友好</li>
+</ul>
+</li>
+<li>定期删除<ul>
+<li>每隔一段时间，就对数据库进行一次检查，删除其中的过期键</li>
+<li>通过限制删除操作执行的时长和频率来减少删除操作对 CPU 时间的影响</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-内存淘汰机制"><a href="#4-内存淘汰机制" class="headerlink" title="4 内存淘汰机制"></a>4 内存淘汰机制</h2><ol>
+<li>volatile-lru：从已设置过期时间的数据中最少使用淘汰</li>
+<li>volatile-ttl：从已设置过期时间的数据中挑选将要过期的数据淘汰</li>
+<li>volatile-random：从已设置过期时间的数据中随机淘汰</li>
+<li>allkeys-lru：从全部数据中最少使用淘汰</li>
+<li>allkeys-random：从全部数据中任意淘汰</li>
+<li>禁止驱逐数据</li>
+</ol>
+<h2 id="5-内存碎片"><a href="#5-内存碎片" class="headerlink" title="5 内存碎片"></a>5 内存碎片</h2><ol>
+<li>redis存储存储数据的时候向操作系统申请的内存空间可能会大于数据实际需要的存储空间。</li>
+<li>当redis中某个数据删除时，通常不会轻易释放内存给操作系统。</li>
+<li>info memory查到内存碎片率大于1.5需要清理碎片</li>
+<li>碎片清理时，设置内存碎片清理所占用CPU时间的比例</li>
+</ol>
+<h1 id="三、性能优化"><a href="#三、性能优化" class="headerlink" title="三、性能优化"></a>三、性能优化</h1><h2 id="1-性能瓶颈"><a href="#1-性能瓶颈" class="headerlink" title="1 性能瓶颈"></a>1 性能瓶颈</h2><ol>
+<li>网络</li>
+<li>内存</li>
+</ol>
+<h2 id="2-内存优化"><a href="#2-内存优化" class="headerlink" title="2 内存优化"></a>2 内存优化</h2><ul>
+<li>降低key和value的大小</li>
+<li>维护共享整数对象池</li>
+<li>选择合适的底层存储结构</li>
+</ul>
+<h3 id="2-1-如何解决大Key的问题"><a href="#2-1-如何解决大Key的问题" class="headerlink" title="2.1 如何解决大Key的问题"></a>2.1 如何解决大Key的问题</h3><ol>
+<li>定义：一般来讲string的value大于10KB的就是大key，其他类型field超过一万个</li>
+<li>影响：<ol>
+<li>单线程，耗时增加会阻塞其他请求</li>
+<li>大key导致分片内存不平衡，CPU使用率不平衡</li>
+</ol>
+</li>
+<li>查看：<ol>
+<li>看单分片监控，是否和平均一致</li>
+<li>bigkeys命令</li>
+</ol>
+</li>
+<li>解决：主要是业务角度<ol>
+<li>删除机制</li>
+<li>做拆分，大key变小key</li>
+<li>是否key设计不合理，比如用的不是随机值而是固定值</li>
+</ol>
+</li>
+</ol>
+<h3 id="2-2-设置ziplist和hashtable"><a href="#2-2-设置ziplist和hashtable" class="headerlink" title="2.2 设置ziplist和hashtable"></a>2.2 设置ziplist和hashtable</h3><ol>
+<li>区别<ul>
+<li>ziplist是双向链表，占用空间比hashtable小，查询耗时比hashtable长</li>
+<li>hashtable是散列表，占用空间比ziplist大，查询耗时比hashtable短</li>
+</ul>
+</li>
+<li>使用ziplist的条件<ul>
+<li>又value字符串长度小于64（线上是8192）</li>
+<li>又field-value对的数量小于512个</li>
+</ul>
+</li>
+<li>查看底层存储的方法<br> OBJECT ENCODIN</li>
+</ol>
+<h2 id="3-网络优化"><a href="#3-网络优化" class="headerlink" title="3 网络优化"></a>3 网络优化</h2><h3 id="3-1-网络优化方法"><a href="#3-1-网络优化方法" class="headerlink" title="3.1 网络优化方法"></a>3.1 网络优化方法</h3><p>核心：使用批量操作</p>
+<ol>
+<li>原生命令：hmget、hmset<ul>
+<li>问题1：无法保证所有的 key 都在同一个hash slot，仍需要多次网络传输（总体来说还是优化）</li>
+<li>问题3：命令只能一种，都是set或者get这种</li>
+<li>优点：可以保证原子操作</li>
+</ul>
+</li>
+<li>pipeline：<ul>
+<li>问题一：需要控制一次批量操作的元素个数</li>
+<li>问题二：也无法保证所有的 key 都在同一个hash slot</li>
+<li>问题三：非原子操作</li>
+<li>优点：可以使用多种命令</li>
+</ul>
+</li>
+<li>lua：<ul>
+<li>问题：redis-cluster下无法保证原子性（也是哈希槽的问题）</li>
+<li>优点一：支持简单逻辑处理</li>
+<li>优点二：非redis-cluster可以保证原子性</li>
+<li>并且一段lua执行过程中，不会有其他脚本或 Redis 命令同时执行，保证了操作不会被其他指令插入或打扰。</li>
+</ul>
+</li>
+</ol>
+<h1 id="四、线程模型"><a href="#四、线程模型" class="headerlink" title="四、线程模型"></a>四、线程模型</h1><h2 id="1-单线程模型"><a href="#1-单线程模型" class="headerlink" title="1 单线程模型"></a>1 单线程模型</h2><p>Redis 基于 Reactor 模式开发了自己的网络事件处理器，被称作文件事件处理器</p>
+<ul>
+<li>文件事件处理器使用I/O多路复用，来同时监听多个套接字，并根据套接字目前执行的任务来为套接字关联不同的事件处理器。</li>
+<li>当被监听的套接字准备好执行连接、读取、写入、关闭等操作时，与操作相对应的文件事件就会产生。这时文件事件处理器就会调用套接字之前关联好的事件处理器来处理这些事件。</li>
+</ul>
+<p>虽然文件事件处理器以单线程方式运行，但通过使用 I/O 多路复用程序来监听多个套接字，实现了高性能的网络通信模型。<br> I/O 多路复用技术能让 Redis 不需要额外创建多余的线程来监听客户端的大量连接，降低了资源的消耗。</p>
+<p>单线程优点：</p>
+<ol>
+<li>容易编程，且易于维护</li>
+<li>Redis瓶颈不在CPU，而在内存和网络</li>
+<li>多线程可能会存在死锁、线程上下文切换问题，影响性能</li>
+</ol>
+<h2 id="2-新版本多线程"><a href="#2-新版本多线程" class="headerlink" title="2 新版本多线程"></a>2 新版本多线程</h2><ul>
+<li>Redis4.0，在对一些大键值对的删除操作的命令时，会异步删除。</li>
+<li>Redis6.0，针对提高网络 IO 读写性能，使用多线程。<br> 执行命令仍然是单线程顺序执行。</li>
+</ul>
+<h1 id="五、高并发"><a href="#五、高并发" class="headerlink" title="五、高并发"></a>五、高并发</h1><h2 id="1-高并发场景下使用缓存需要注意哪些问题"><a href="#1-高并发场景下使用缓存需要注意哪些问题" class="headerlink" title="1 高并发场景下使用缓存需要注意哪些问题"></a>1 高并发场景下使用缓存需要注意哪些问题</h2><ol>
+<li>缓存一致性问题<br> 需要保证缓存中的数据与数据库中的一致，需要选择业务适合的缓存过期和更新策略。一般在数据发生更改的时，主动更新缓存中的数据。</li>
+<li>缓存击穿问题<br> 在某个高访问量的key过期时，大量的请求会直接落到数据库中。解决方法是加载缓存时采用互斥锁，保证只有一条请求落到数据库，其他请求先自旋，然后查询缓存，最后再申请锁。</li>
+<li>缓存穿透问题<br> 一些没有value的key被频繁查找，可以通过在缓存中缓存空对象来缓解。</li>
+<li>缓存雪崩问题<br> 大量的缓存同时失效或过期。解决方式：限流、降级、熔断、多级缓存。比如在设置过期时间时，合理增加随机性。</li>
+</ol>
+<h2 id="2-高并发下使用规范"><a href="#2-高并发下使用规范" class="headerlink" title="2 高并发下使用规范"></a>2 高并发下使用规范</h2><h3 id="2-1-键值设计"><a href="#2-1-键值设计" class="headerlink" title="2.1 键值设计"></a>2.1 键值设计</h3><ol>
+<li>key设计<ul>
+<li>有随机性，不要用固定值做key（防止哈希槽冲突）</li>
+<li>以业务名为前缀，用冒号分隔</li>
+<li>缩短key的长度</li>
+<li>不包含特殊字符</li>
+</ul>
+</li>
+<li>value设计<ul>
+<li>业务阻止大key（string类型10kb以内，其他元素小于5000）</li>
+<li>选择合适的数据类型（比如使用hash拆分）</li>
+<li>设置过期时间</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-2-命令使用"><a href="#2-2-命令使用" class="headerlink" title="2.2 命令使用"></a>2.2 命令使用</h3><ul>
+<li>尽量使用批量操作降低网络耗时（pipeline或者hgetall）</li>
+<li>使用批量操作注意个数</li>
+<li>禁止使用keys、flushall、flushdb，用rename禁用</li>
+<li>尽量避免使用redis的事物（不支持回滚、集群版key必须在同一个slot里）</li>
+</ul>
+<h3 id="2-3-使用规范"><a href="#2-3-使用规范" class="headerlink" title="2.3 使用规范"></a>2.3 使用规范</h3><ul>
+<li>避免多个应用使用同一个Redis实例</li>
+<li>使用连接池，控制连接数，提高效率</li>
+<li>添加熔断机制</li>
+<li>选择合适的内存淘汰策略（allkeys-lru），设置过期时间</li>
+</ul>
+<h1 id="六、持久化"><a href="#六、持久化" class="headerlink" title="六、持久化"></a>六、持久化</h1><ul>
+<li>防止系统故障</li>
+<li>重启机器之后数据还在</li>
+<li>备份到其他位置</li>
+</ul>
+<h2 id="1-RDB"><a href="#1-RDB" class="headerlink" title="1 RDB"></a>1 RDB</h2><p>快照</p>
+<h3 id="1-1-什么是RDB"><a href="#1-1-什么是RDB" class="headerlink" title="1.1 什么是RDB"></a>1.1 什么是RDB</h3><ul>
+<li>快照持久化是默认的持久化方式</li>
+<li>redis通过创建快照，来获得存储在内存里面的数据，在某个时间点上的副本。</li>
+</ul>
+<h3 id="1-2-RDB-创建快照时会阻塞主线程吗？"><a href="#1-2-RDB-创建快照时会阻塞主线程吗？" class="headerlink" title="1.2 RDB 创建快照时会阻塞主线程吗？"></a>1.2 RDB 创建快照时会阻塞主线程吗？</h3><ul>
+<li>bgsave是默认命令，会fork出一个子进程，子进程创建快照，不会阻塞主线程</li>
+<li>save是同步保存操作，会阻塞主线程</li>
+</ul>
+<h2 id="2-AOF"><a href="#2-AOF" class="headerlink" title="2 AOF"></a>2 AOF</h2><p>只追加文件</p>
+<h3 id="2-1-什么是AOF"><a href="#2-1-什么是AOF" class="headerlink" title="2.1 什么是AOF"></a>2.1 什么是AOF</h3><ul>
+<li>开启AOF持久化后，每执行一条更改数据的命令，会将该命令写入到内存缓存，根据配置决定何时将其同步到硬盘中的AOF文件</li>
+<li>与RDB相比，AOF持久化的实时性更好</li>
+</ul>
+<h3 id="2-2-AOF是如何实现的"><a href="#2-2-AOF是如何实现的" class="headerlink" title="2.2 AOF是如何实现的"></a>2.2 AOF是如何实现的</h3><p>aof会在执行完命令之后才记录日志。</p>
+<p>优点：</p>
+<ul>
+<li>这样可以避免额外的检查开销</li>
+<li>命令执行完之后再记录，不会阻塞当前的命令执行</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>执行完命令还没有AOF就宕机，会导致对应的修改丢失</li>
+<li>会阻塞后续其他命令的执行（AOF记录日志是在Redis主线程中进行的）</li>
+</ul>
+<h3 id="2-3-AOF重写"><a href="#2-3-AOF重写" class="headerlink" title="2.3 AOF重写"></a>2.3 AOF重写</h3><ol>
+<li>含义和条件<br> 当 AOF 变得太大时，Redis 能够在后台自动重写 AOF 产生一个新的 AOF 文件，这个新的 AOF 文件和原有的 AOF 文件所保存的数据库状态一样，但体积更小。</li>
+<li>实现方式<br> 这个功能是通过读取当前的数据库状态来实现的</li>
+<li>可能发生的问题和解决方式<ul>
+<li>问题1：创建新AOF时会出现进行大量写操作，主线程被长时间阻塞，无法处理其他命令</li>
+<li>问题1的解决方案：将AOF放到子线程执行</li>
+<li>问题2：在后台AOF重写时，服务器会对当前数据进行修改，会导致数据不一致</li>
+<li>问题2的解决方案：使用AOF重写缓存。完成AOF文件重写后，将AOF重写缓存中的内容全部写入到新的AOF文件中，之后，改名覆盖旧的AOF文件</li>
+</ul>
+</li>
+</ol>
+<h2 id="3-如何选择RDB和AOF"><a href="#3-如何选择RDB和AOF" class="headerlink" title="3 如何选择RDB和AOF"></a>3 如何选择RDB和AOF</h2><h3 id="3-1-RDB优点"><a href="#3-1-RDB优点" class="headerlink" title="3.1 RDB优点"></a>3.1 RDB优点</h3><ol>
+<li>RDB比AOF更小，适合做灾备</li>
+<li>使用 RDB 文件恢复数据，直接解析还原数据即可，不需要一条一条地执行命令，速度非常快。</li>
+</ol>
+<h3 id="3-2-AOF优点"><a href="#3-2-AOF优点" class="headerlink" title="3.2 AOF优点"></a>3.2 AOF优点</h3><ol>
+<li>AOF实时性比RDB更好</li>
+<li>RDB在产生的时候会对CPU和资源影响比较大</li>
+<li>AOF易于理解，可以轻松导出进行分析</li>
+</ol>
+<h2 id="4-混合持久化"><a href="#4-混合持久化" class="headerlink" title="4 混合持久化"></a>4 混合持久化</h2><ul>
+<li>结合 RDB 和 AOF 的优点, 快速加载同时避免丢失过多的数据。</li>
+<li>默认关闭，需要通过配置项开启</li>
+</ul>
+<h1 id="七、集群-哨兵-主从"><a href="#七、集群-哨兵-主从" class="headerlink" title="七、集群/哨兵/主从"></a>七、集群/哨兵/主从</h1><h1 id="八、应用"><a href="#八、应用" class="headerlink" title="八、应用"></a>八、应用</h1><h2 id="1-分布式锁"><a href="#1-分布式锁" class="headerlink" title="1 分布式锁"></a>1 分布式锁</h2><ul>
+<li>用lua脚本，先判断setnx是否结果为1，获取到了锁，再立即执行expire设置一个合理的超时时间，保证原子性。</li>
+<li>同时在此线程开启守护线程，给锁续期。</li>
+<li>能确保真的拿到锁，也可以避免线程异常结束，锁未被释放的情况。</li>
+</ul>
+<h2 id="2-购物车"><a href="#2-购物车" class="headerlink" title="2 购物车"></a>2 购物车</h2><p>购物车信息一般用Hash存储，因为购物车中的商品频繁修改和变动</p>
+<ul>
+<li>用户id为 key</li>
+<li>商品id为field，商品数量为value 普通维护</li>
+<li>用户添加商品就是往 Hash 里面增加新的 field 与 value；</li>
+<li>查询购物车信息就是遍历对应的 Hash；</li>
+<li>更改商品数量直接修改对应的 value 值（直接 set 或者做运算皆可）；</li>
+<li>删除商品就是删除 Hash 中对应的 field；</li>
+<li>清空购物车直接删除对应的 key 即可。</li>
+</ul>
+<h2 id="3-排行榜"><a href="#3-排行榜" class="headerlink" title="3 排行榜"></a>3 排行榜</h2><p>sorted set经常被用在排行榜上。<br> 常见的命令有：<code>ZRANGE</code> (从小到大排序) 、 <code>ZREVRANGE</code> （从大到小排序）、<code>ZREVRANK</code> (指定元素排名)。</p>
+<h2 id="4-抽奖系统"><a href="#4-抽奖系统" class="headerlink" title="4 抽奖系统"></a>4 抽奖系统</h2><p>使用set</p>
+<ul>
+<li><code>SPOP key count</code> ： 随机移除并获取指定集合中一个或多个元素，适合不允许重复中奖的场景。</li>
+<li><code>SRANDMEMBER key count</code> : 随机获取指定集合中指定数量的元素，适合允许重复中奖的场景。</li>
+</ul>
+<h2 id="5-活跃用户"><a href="#5-活跃用户" class="headerlink" title="5 活跃用户"></a>5 活跃用户</h2><p>使用bitmap<br> 使用日期（精确到天）作为 key，然后用户ID为offset，如果当日活跃过就设置为 1。<br> ….</p>
+<h2 id="6-页面访问量"><a href="#6-页面访问量" class="headerlink" title="6 页面访问量"></a>6 页面访问量</h2><ol>
+<li>用<code>PFADD</code>将访问指定页面的每个用户 ID 添加到 <code>HyperLogLog</code> 中。</li>
+<li>用<code>PFCOUNT</code>统计指定页面的 UV。</li>
+</ol>
+<h1 id="九、数据结构"><a href="#九、数据结构" class="headerlink" title="九、数据结构"></a>九、数据结构</h1><h2 id="1-有哪些数据结构"><a href="#1-有哪些数据结构" class="headerlink" title="1 有哪些数据结构"></a>1 有哪些数据结构</h2><p>五种基础数据结构</p>
+<ol>
+<li>String：字符串类型，可以存储字符串、整数和浮点数。</li>
+<li>List：有序列表类型，可以存储多个元素，每个元素可以是字符串或者数字。底层是双向链表</li>
+<li>Set：集合类型，可以存储多个元素，每个元素必须是唯一的。底层是哈希表</li>
+<li>Hash：哈希类型，可以存储多个字段和对应的值，每个字段和值都是字符串类型。key field value</li>
+<li>Zset：有序集合类型，可以存储多个元素，每个元素可以关联一个分数，用于排序。底层实现是跳跃表和哈希表</li>
+</ol>
+<p>三种特殊数据结构</p>
+<ol>
+<li><p>HyperLogLogs（基数统计）</p>
+<p>用概率统计数组中不重复的元素个数。用非常少的内存，存储非常多的数据，误差大概0.81%。</p>
+<ul>
+<li><code>PFADD</code>将value存进key中</li>
+<li><code>PFCOUNT</code>返回该key的近似基数</li>
+</ul>
+</li>
+<li><p>Bitmap （位存储）</p>
+</li>
+<li><p>Geospatial (地理位置)。</p>
+</li>
+</ol>
+<h2 id="2-String"><a href="#2-String" class="headerlink" title="2 String"></a>2 String</h2><h2 id="3-Hash"><a href="#3-Hash" class="headerlink" title="3 Hash"></a>3 Hash</h2><h3 id="3-1-Hashtable和ziplist"><a href="#3-1-Hashtable和ziplist" class="headerlink" title="3.1 Hashtable和ziplist"></a>3.1 Hashtable和ziplist</h3><h2 id="4-ZSet"><a href="#4-ZSet" class="headerlink" title="4 ZSet"></a>4 ZSet</h2><h3 id="4-1-跳跃表"><a href="#4-1-跳跃表" class="headerlink" title="4.1 跳跃表"></a>4.1 跳跃表</h3><ul>
+<li>通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的。</li>
+<li>跳跃表在链表的基础上增加了多级索引以提升查找的效率，是一个空间换时间的方案。</li>
+<li>当节点本身比较大或者元素数量比较多的时候，空间的缺点可以忽略。</li>
+<li>Redis使用跳跃表作为有序集合键的底层实现之一，如果一个有序集合包含的元素数量比较多，又或者有序集合中元素的成员是比较长的字符串时，Redis就会使用跳跃表来作为有序集合键的底层实现。</li>
+</ul>
+<h2 id="5-List"><a href="#5-List" class="headerlink" title="5 List"></a>5 List</h2><h2 id="6-Set"><a href="#6-Set" class="headerlink" title="6 Set"></a>6 Set</h2><h1 id="十、事物"><a href="#十、事物" class="headerlink" title="十、事物"></a>十、事物</h1>
+    </div>
+
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>版权所有 © 2020 | 作者: 毕成 | 主题 By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">本站浏览总访问量: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">本站访问人数: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="NOsswOncKgc8HOxqo9oxIWlX-gzGzoHsz">
+<input type="hidden" id="valine_appKey" value="z1FihjWEbS8uIfUQdmCtK7zz">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
