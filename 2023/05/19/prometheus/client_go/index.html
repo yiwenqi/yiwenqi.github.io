@@ -28,14 +28,12 @@
  replay-btn" aria-hidden="true"></i></a>
     <div class="post-title">
         <p>
-            
+            prometheus/client_go
         </p>
         <hr>
     </div>
     <div class="post-content">
-        <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">title: prometheus/client_go</span><br></pre></td></tr></table></figure>
-
-<h1 id="prometheus-go-client-内存持续上涨"><a href="#prometheus-go-client-内存持续上涨" class="headerlink" title="prometheus go client 内存持续上涨"></a>prometheus go client 内存持续上涨</h1><h2 id="事情起因"><a href="#事情起因" class="headerlink" title="事情起因"></a>事情起因</h2><ul>
+        <h1 id="prometheus-go-client-内存持续上涨"><a href="#prometheus-go-client-内存持续上涨" class="headerlink" title="prometheus go client 内存持续上涨"></a>prometheus go client 内存持续上涨</h1><h2 id="事情起因"><a href="#事情起因" class="headerlink" title="事情起因"></a>事情起因</h2><ul>
 <li>网关层服务增加prometheus client 之后内存上涨10GB，造成内存报警；</li>
 </ul>
 <h2 id="分析原因"><a href="#分析原因" class="headerlink" title="分析原因"></a>分析原因</h2><p>​	增加prometheus client 之后内存上涨是在预料之内的事情，但上涨幅度达到10GB，超出预估范围100%以上！起初分析原因是因为一些未知的错误增加到detail label 上导致，比如json解析失败时，不同的字符错误会输出不同的错误类型，而世界上已知字符数量为120W！指标无限扩大！但是查询指标内容之后，发现err错误只占指标的一小部分，但依然是一个隐患，因此label的内容应该固定在指定数量以内。</p>
