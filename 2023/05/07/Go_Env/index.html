@@ -34,11 +34,47 @@
     </div>
     <div class="post-content">
         <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h3 id="设置GOROOT"><a href="#设置GOROOT" class="headerlink" title="设置GOROOT"></a>设置GOROOT</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOROOT=/home/compile/makepkg_go/go1.18</span><br></pre></td></tr></table></figure>
+<h2 id="设置GOROOT"><a href="#设置GOROOT" class="headerlink" title="设置GOROOT"></a>设置GOROOT</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOROOT=/home/compile/makepkg_go/go1.18</span><br></pre></td></tr></table></figure>
 
-<h3 id="Mac-设置系统级别：Path"><a href="#Mac-设置系统级别：Path" class="headerlink" title="Mac 设置系统级别：Path"></a>Mac 设置系统级别：Path</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/paths.d</span><br><span class="line">vi go</span><br><span class="line">/usr/local/go/bin</span><br></pre></td></tr></table></figure>
 
-<h3 id="Mac设置用户级别：PATH"><a href="#Mac设置用户级别：PATH" class="headerlink" title="Mac设置用户级别：PATH"></a>Mac设置用户级别：PATH</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vi ~/.bash_profile</span><br><span class="line"><span class="built_in">export</span> GOROOT=/Users/herio/sdk/go1.18.3</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$GOROOT</span>/bin</span><br><span class="line"><span class="built_in">export</span> GOPATH=/Users/herio/go</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$GOPATH</span>/bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="Mac-设置系统级别：Path"><a href="#Mac-设置系统级别：Path" class="headerlink" title="Mac 设置系统级别：Path"></a>Mac 设置系统级别：Path</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/paths.d</span><br><span class="line">vi go</span><br><span class="line">/usr/local/go/bin</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Mac设置用户级别：PATH"><a href="#Mac设置用户级别：PATH" class="headerlink" title="Mac设置用户级别：PATH"></a>Mac设置用户级别：PATH</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vi ~/.bash_profile</span><br><span class="line"><span class="built_in">export</span> GOROOT=/Users/herio/sdk/go1.18.3</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$GOROOT</span>/bin</span><br><span class="line"><span class="built_in">export</span> GOPATH=/Users/herio/go</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$GOPATH</span>/bin</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="设置GCC环境"><a href="#设置GCC环境" class="headerlink" title="设置GCC环境"></a>设置GCC环境</h2><h3 id="ld-搜索路径"><a href="#ld-搜索路径" class="headerlink" title="ld 搜索路径"></a>ld 搜索路径</h3><p>一.静态库链接时搜索路径顺序 </p>
+<pre><code>   1. ld会去找GCC命令中的参数-L
+
+   2. 再找gcc的环境变量LIBRARY_PATH
+
+   3. 再找内定目录 /lib /usr/lib /usr/local/lib 这是当初compile gcc时写在程序内的  
+</code></pre>
+<p>二.动态链接时、执行时搜索路径顺序: </p>
+<pre><code>   1. 编译目标代码时指定的动态库搜索路径
+
+   2. 环境变量LD_LIBRARY_PATH指定的动态库搜索路径
+
+   3. 配置文件/etc/ld.so.conf中指定的动态库搜索路径
+
+   4. 默认的动态库搜索路径/lib 
+
+   5. 默认的动态库搜索路径/usr/lib  
+</code></pre>
+<p>三.有关环境变量</p>
+<pre><code>   LIBRARY_PATH环境变量：指定程序静态链接库文件搜索路径
+
+   LD_LIBRARY_PATH环境变量：指定程序动态链接库文件搜索路径
+</code></pre>
+<h3 id="CGO编译时"><a href="#CGO编译时" class="headerlink" title="CGO编译时"></a>CGO编译时</h3><p>在linux中默认库的路径为&#x2F;usr&#x2F;lib 或者&#x2F;usr&#x2F;lib64 。如果想将自己所在的文件夹也添加到库搜索目录中去。那么有两种方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">修改配置文件，将自己的目录添加到库搜索目录列表中去。/etc/ld.so.conf 然后执行ldconfig</span><br><span class="line">修改环境变量，临时改变库搜索路径。 <span class="built_in">export</span> LD_LIBRARY_PATH=<span class="variable">$LD_LIBRARY_PATH</span>:自己的目录</span><br></pre></td></tr></table></figure>
+
+<h3 id="CGO调用C"><a href="#CGO调用C" class="headerlink" title="CGO调用C"></a>CGO调用C</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">针对共享库由于是操作系统管理程序运行加载的共享库，所以可以不用管，只需要将so库放入对应的目录即可。针对静态库，那么就要在代码中多添加一行，告诉编译器编译时需要连接的库。// #cgo LDFLAGS: -L ./ -lfoo</span><br></pre></td></tr></table></figure>
+
+
     </div>
 
     
