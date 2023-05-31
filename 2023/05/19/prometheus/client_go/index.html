@@ -47,7 +47,7 @@
 <h3 id="内存持续上涨"><a href="#内存持续上涨" class="headerlink" title="内存持续上涨"></a>内存持续上涨</h3><p>​	首先解决第一个问题内存持续上涨的原因，在预期中我们预期希望的应该是当prometheus采集时，能够拿到当前有效的信息即可，不需要无效内容，比如某个公司的QPS从五天前就一直是零，那么我们认为这是一个无效数据；所以我们使用Client_golang希望采集的应该是当前的实时数据；</p>
 <p>​	而实际情况是，当我们在prometheus上删除某个label时，client端依然存在；查看client_golang源码发现，prometheus client 并没有显示的去调用删除；因此指标将会一直存在内存当中，这也是导致内存会持续上涨的原因之一。</p>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_9e3ca4f4-d2c6-4943-82d9-87573ab534d8.png" alt="企业微信截图_9e3ca4f4-d2c6-4943-82d9-87573ab534d8"></p>
-<h3 id="内存膨胀"><a href="#内存膨胀" class="headerlink" title="内存膨胀"></a>内存膨胀</h3><p>​	第二个问题为什么在删除AppId&amp;Org两个大范围的维度之后，内存波动依然会达到 1GB 上下？</p>
+<h3 id="内存膨胀"><a href="#内存膨胀" class="headerlink" title="内存膨胀"></a>内存膨胀</h3><p>​	第二个问题为什么在删除AppId&amp;Org两个大范围的维度之后，内存波动依然会达到 1GB 上下？观察</p>
 
     </div>
 
