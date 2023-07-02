@@ -37,24 +37,82 @@
 <p>Go pprof 可以让你清晰的知道,运行中程序是如何运行,此刻他又在经历些什么</p>
 <p>我们由简入深,先知道如何使用他,再深入的了解他的功能,带入到实践当中</p>
 </blockquote>
-<h1 id="Go-pprof-的使用"><a href="#Go-pprof-的使用" class="headerlink" title="Go pprof 的使用"></a>Go pprof 的使用</h1><pre><code> 如果我们想要生成可视图,则需要安装 ` brew install graphviz`
+<h1 id="Go-pprof-的使用"><a href="#Go-pprof-的使用" class="headerlink" title="Go pprof 的使用"></a>Go pprof 的使用</h1><p>当我们分析不同的内容时，我们需要使用到的文件也不同；</p>
+<ul>
+<li>cpu（CPU Profiling）: <code>/debug/pprof/profile</code>，默认进行 30s 的 CPU Profiling，得到一个分析用的 profile 文件</li>
+<li>block（Block Profiling）：<code>/debug/pprof/block</code>，查看导致阻塞同步的堆栈跟踪</li>
+<li>goroutine：<code>/debug/pprof/goroutine</code>，查看当前所有运行的 goroutines 堆栈跟踪</li>
+<li>heap（Memory Profiling）: <code>/debug/pprof/heap</code>，查看活动对象的内存分配情况</li>
+<li>mutex（Mutex Profiling）：<code>/debug/pprof/mutex</code>，查看导致互斥锁的竞争持有者的堆栈跟踪</li>
+<li>threadcreate：<code>/debug/pprof/threadcreate</code>，查看创建新OS线程的堆栈跟踪</li>
+</ul>
+<p>1、按照可视化工具<code>graphviz</code></p>
+<pre><code> 如果我们想要生成可视图,则需要安装 ` brew install graphviz`
 </code></pre>
-<p>​	Go pprof首先需要代码，引入了<code>net/http/pprof</code> ,通常来说,各种GoWeb框架会自带,例如字节的Kitex框架等;</p>
-<p>如果代码中引入了<code>net/http/pprof</code>则无需进行其他操作;</p>
+<p>2、生成分析文件	</p>
+<p>​	<code>Go pprof</code> 首先需要代码，引入了<code>net/http/pprof</code> ,通常来说,各种GoWeb框架会自带,例如字节的<code>Kitex</code>框架等; 如果代码中引入了<code>net/http/pprof</code>则无需进行其他操作;直接执行以下命令，若没有引用，则无法使用<code>pprof</code></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">weget http://127.0.0.1:80/pprof/profile</span><br></pre></td></tr></table></figure>
 
+<p>3、查看文件内容	</p>
 <p>​	执行上述操作后,会下载一个<code>profile</code>文件,我们下载到本地后使用 <code>go tool pprof filename</code> 查看内容;将<code>profile</code>文件下载后,执行<code>go tool pprof profile</code>即可查看内容；同时我们也可以执行<code>go tool pprof -http=:8080 profile</code>生成可视化界面,点击左上角的View即可查看火焰图;</p>
 <p>以上命令总结:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof profile</span><br><span class="line">go tool pprof -http=:8080 profile</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 使用go tool 工具在线看</span><br><span class="line">go tool pprof profile</span><br><span class="line"># 使用web页面查看火焰图等可视化图</span><br><span class="line">go tool pprof -http=:8080 profile</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/image-20230628232558050.png" alt="image-20230628232558050"></p>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/image-20230628231851925.png" alt="image-20230628231851925"></p>
 <p>​	进入到命令页面之后,我们执行<code>top20</code>,打印消耗排名前20, 同时也可以输入<code>web</code>进入页面查看;</p>
-<h1 id="pprof指标的含义"><a href="#pprof指标的含义" class="headerlink" title="pprof指标的含义"></a>pprof指标的含义</h1><h2 id="flat-flat"><a href="#flat-flat" class="headerlink" title="flat flat%"></a>flat flat%</h2><p>flat:  代表一个函数内的directly操作的耗时</p>
+<h1 id="pprof-指标的含义"><a href="#pprof-指标的含义" class="headerlink" title="pprof 指标的含义"></a>pprof 指标的含义</h1><h2 id="flat-flat"><a href="#flat-flat" class="headerlink" title="flat flat%"></a>flat flat%</h2><p>flat:  代表一个函数内的directly操作的耗时</p>
 <p>flat:  代表flat&#x2F;总的运行时间,所有的flat相加即为总时间  </p>
+<ul>
+<li>directly 操作代表函数内部的CPU直接调用，若是调用其他函数等操作则不是directly操作；</li>
+<li>flat越大，代表这个函数的cpu处理较多</li>
+</ul>
 <h2 id="cum-cum"><a href="#cum-cum" class="headerlink" title="cum cum%"></a>cum cum%</h2><p>cum:  代表一个函数内所有物理操作的耗时</p>
 <p>cum:  代表cum&#x2F;总的运行时间</p>
+<ul>
+<li>cum越高代表某个函数执行的时间越长，此函数的性能越低；</li>
+</ul>
 <h2 id="sum"><a href="#sum" class="headerlink" title="sum"></a>sum</h2><p>sum代表以上行所有flat相加</p>
+<h1 id="火焰图"><a href="#火焰图" class="headerlink" title="火焰图"></a>火焰图</h1><p>火焰图分为两种：on_cpu, off_cpu</p>
+<table>
+<thead>
+<tr>
+<th>火焰图类型</th>
+<th>横轴含义</th>
+<th>纵轴含义</th>
+<th>解决问题</th>
+<th>采样方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cpu火焰图</td>
+<td>cpu占用时间</td>
+<td>调用栈</td>
+<td>找出cpu占用高的问题函数，分析代码热路径；</td>
+<td>固定频率采样cpu调用栈；</td>
+</tr>
+<tr>
+<td>off-cpu火焰图</td>
+<td>阻塞时间</td>
+<td>调用栈</td>
+<td>i&#x2F;o、网络等阻塞场景导致的性能下降；竞争锁，死锁导致的性能下降问题；</td>
+<td>固定频率采样阻塞事件调<br/>用栈</td>
+</tr>
+<tr>
+<td>内存火焰图</td>
+<td>内存申请&#x2F;释放函数调用次数</td>
+<td>调用栈</td>
+<td>内存泄露问题；内存占用高的对用象&#x2F;申请内存多的函数；虚拟内存栈或物理内存泄露问题；</td>
+<td>跟踪调用栈</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
 
     </div>
 
