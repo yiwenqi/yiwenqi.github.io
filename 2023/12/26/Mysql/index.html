@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Mysql 基础Mysql架构Mysql主要分为三层，客户层，server层，存储引擎层（存储引擎层提供接口用于数据读写接口）  MySQL 索引 一种能帮助mysql提高了查询效率的数据结构：索引数据结构。  索引的原理索引的存储原理大致可以概括为一句话：以空间换时间。 一般来说索引本身也很大，不可能全部存储在内存中，因此索引往往是存储在磁盘上的文件中的（可能存储在单独的索引文件中，也可能和数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql">
+<meta property="og:url" content="http://example.com/2023/12/26/Mysql/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Mysql 基础Mysql架构Mysql主要分为三层，客户层，server层，存储引擎层（存储引擎层提供接口用于数据读写接口）  MySQL 索引 一种能帮助mysql提高了查询效率的数据结构：索引数据结构。  索引的原理索引的存储原理大致可以概括为一句话：以空间换时间。 一般来说索引本身也很大，不可能全部存储在内存中，因此索引往往是存储在磁盘上的文件中的（可能存储在单独的索引文件中，也可能和数据">
+<meta property="og:locale">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/MySql_arch.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E7%AE%80%E5%8D%95%E7%A4%BA%E4%BE%8B.png">
+<meta property="article:published_time" content="2023-12-26T14:24:54.766Z">
+<meta property="article:modified_time" content="2024-07-14T02:25:53.845Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/MySql_arch.png">
+
+<link rel="canonical" href="http://example.com/2023/12/26/Mysql/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Mysql | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="تشغيل شريط التصفح">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/26/Mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mysql
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+
+              <time title="أُنشأ: 2023-12-26 22:24:54" itemprop="dateCreated datePublished" datetime="2023-12-26T22:24:54+08:00">2023-12-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2024-07-14 10:25:53" itemprop="dateModified" datetime="2024-07-14T10:25:53+08:00">2024-07-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Mysql-基础"><a href="#Mysql-基础" class="headerlink" title="Mysql 基础"></a>Mysql 基础</h1><h2 id="Mysql架构"><a href="#Mysql架构" class="headerlink" title="Mysql架构"></a>Mysql架构</h2><p>Mysql主要分为三层，客户层，server层，存储引擎层（存储引擎层提供接口用于数据读写接口）</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/MySql_arch.png" alt="image-20240630231048538"></p>
+<h2 id="MySQL-索引"><a href="#MySQL-索引" class="headerlink" title="MySQL 索引"></a>MySQL 索引</h2><ul>
+<li>一种能帮助mysql提高了查询效率的数据结构：<strong>索引数据结构</strong>。</li>
+</ul>
+<h3 id="索引的原理"><a href="#索引的原理" class="headerlink" title="索引的原理"></a>索引的原理</h3><p>索引的存储原理大致可以概括为一句话：<strong>以空间换时间</strong>。</p>
+<p>一般来说索引本身也很大，不可能全部存储在内存中，因此<code>索引往往是存储在磁盘上的文件中的</code>（可能存储在单独的索引文件中，也可能和数据一起存储在数据文件中）。</p>
+<p>数据库在未添加索引进行查询的时候默认是进行全文搜索，也就是说有多少数据就进行多少次查询，然后找到相应的数据就把它们放到结果集中，直到全文扫描完毕。</p>
+<h3 id="索引的分类"><a href="#索引的分类" class="headerlink" title="索引的分类"></a>索引的分类</h3><ul>
+<li><p>主键索引：primary key </p>
+<ul>
+<li>设定主键后，数据库自动建立的索引，innoDb引擎为聚簇索引；</li>
+</ul>
+</li>
+<li><p>普通索引</p>
+<ul>
+<li>mysql中的基础索引类型，没有什么限制，允许在索引列插入NULL</li>
+</ul>
+</li>
+<li><p>唯一索引</p>
+<ul>
+<li>索引列的值必须唯一</li>
+</ul>
+</li>
+<li><p>复合索引</p>
+<ul>
+<li>一个索引可以包含多个列，多个列共同构成一个复合索引</li>
+</ul>
+</li>
+<li><p>前缀索引</p>
+<ul>
+<li>使用BLOG，TEXT，长类型varchar类型时可以使用前缀索引；</li>
+</ul>
+</li>
+<li><p>全文索引</p>
+<ul>
+<li>char，varchar上的全文查找</li>
+</ul>
+</li>
+<li><p>空间索引</p>
+</li>
+</ul>
+<h2 id="索引的数据结构"><a href="#索引的数据结构" class="headerlink" title="索引的数据结构"></a>索引的数据结构</h2><p>Mysql索引有两大数据结构：</p>
+<ul>
+<li>B+ Tree </li>
+<li>hash</li>
+</ul>
+<p>对于大部分单条查询hash索引即可满足查询性能，其余的建议使用B+树</p>
+<h3 id="Hash表"><a href="#Hash表" class="headerlink" title="Hash表"></a>Hash表</h3><p>hash表介绍</p>
+<p>  我们使用hash表存储表数据结构，<strong>Key可以存储索引列，Value可以存储行记录或者行磁盘地址</strong>。Hash表在等值查询时效率很高，时间复杂度为O(1)；但是不支持范围快速查找，范围查找时只能通过扫描全表的方式，筛选出符合条件的数据。</p>
+<h2 id="聚簇索引"><a href="#聚簇索引" class="headerlink" title="聚簇索引"></a>聚簇索引</h2><p><code> 聚簇索引不是一种索引类型，而是一种数据存储方式</code></p>
+<p><strong>介绍</strong>:</p>
+<ul>
+<li><p>聚簇索引：将数据存储与索引放到了一块，找到索引也就找到了数据</p>
+</li>
+<li><p>非聚簇索引：将数据存储于索引分开结构，索引结构的叶子节点指向了数据的对应行，myisam通过key_buffer把索引先缓存到内存中，当需要访问数据时（通过索引访问数据），在内存中直接搜索索引，然后通过索引找到磁盘相应数据，这也就是为什么索引不在key buffer命中时，速度慢的原因</p>
+</li>
+</ul>
+<p><strong>澄清一个概念</strong>：innodb中，在聚簇索引之上创建的索引称之为辅助索引，辅助索引访问数据总是需要二次查找，非聚簇索引都是辅助索引，像复合索引、前缀索引、唯一索引，辅助索引叶子节点存储的不再是行的物理位置，而是主键值。</p>
+<ul>
+<li><p>聚簇索引的演变：</p>
+<ul>
+<li><p>二叉树</p>
+<ul>
+<li>当二叉树插入的数据都是大于前一个数据时会成为一链表结构，即为线性树；</li>
+</ul>
+</li>
+<li><p>平衡二叉树</p>
+<ul>
+<li>每次插入时会判断<strong>每个节点的左子树和右子树的高度差不能超过 1</strong></li>
+<li>但是当插入元素过多时会出现树的高度过大的问题；</li>
+</ul>
+</li>
+<li><p>B树</p>
+<ul>
+<li>允许一个节点可以有两个以上的子叶子节点；</li>
+<li>但是做范围查询时需要使用中序遍历，设计多个节点的磁盘I&#x2F;O</li>
+</ul>
+</li>
+<li><p>B+树</p>
+<ul>
+<li>最底部存放的不再只是索引，而是存储索引+数据</li>
+<li>最底部的叶子节点之间形成有序链表</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E7%AE%80%E5%8D%95%E7%A4%BA%E4%BE%8B.png" alt="image-20240630232608169"></p>
+<ol>
+<li>InnoDB使用的是聚簇索引，将<strong>主键组织到一棵B+树</strong>中，而<strong>行数据就储存在叶子节点</strong>上，若使用”where id &#x3D; 14”这样的条件查找主键，则<strong>按照B+树的检索算法即可查找到对应的叶节点，之后获得行数据</strong>。</li>
+<li>若<strong>对Name列进行条件搜索，则需要两个步骤</strong>：<strong>第一步在辅助索引B+树中检索Name，到达其叶子节点获取对应的主键</strong>。第二步<strong>使用主键在主索引B+树种再执行一次B+树检索操作，最终到达叶子节点即可获取整行数据</strong>。（<strong>重点在于通过其他键需要建立辅助索引</strong>）</li>
+</ol>
+<p><strong>聚簇索引的误区</strong></p>
+<ul>
+<li><strong>把主键自动设为聚簇索引</strong>： 聚簇索引具有唯一性，且性能最好；因此设置聚簇索引时我们必须谨慎设置；</li>
+<li><strong>聚簇索引需要两次B+树查找效率看起来”更低”：</strong><ul>
+<li>首先明确聚簇索引的使用场景：插入较少（当使用uuid作为主键时会导致数据插入到之前记录的中间，需要强制移动之前的记录，因此大量新行插入不适用），建议使用自增id作用主键（前面场景说到聚簇索引需要谨慎，实际上生活中也存在顺序主键比如：学号，班级等），这时主键页会按照顺序填满；</li>
+<li>适合使用在排序的场景，因为相邻数据放在一起（同一页中），I&#x2F;O次数更少</li>
+</ul>
+</li>
+</ul>
+<p><strong>聚簇索引也有缺点</strong></p>
+<ul>
+<li>维护索引开销大：<strong>特别是插入新行或者主键被更新导至要分页(page split)的时候</strong>；</li>
+<li>表因为使用UUId（随机ID）作为主键，使数据存储稀疏；</li>
+</ul>
+<h3 id="建索引的几大原则"><a href="#建索引的几大原则" class="headerlink" title="建索引的几大原则"></a>建索引的几大原则</h3><ol>
+<li><p><strong>最左前缀匹配原则</strong>，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(&gt;、&lt;、between、like)就停止匹配，比如a &#x3D; 1 and b &#x3D; 2 and c &gt; 3 and d &#x3D; 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。</p>
+</li>
+<li><p><strong>&#x3D;和in可以乱序</strong>，比如a &#x3D; 1 and b &#x3D; 2 and c &#x3D; 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式。</p>
+</li>
+<li><p><strong>尽量选择区分度高的列作为索引</strong>，区分度的公式是count(distinct col)&#x2F;count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录。</p>
+</li>
+<li><p><strong>索引列不能参与计算</strong>，保持列“干净”，比如from_unixtime(create_time) &#x3D; ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create_time &#x3D; unix_timestamp(’2014-05-29’)。</p>
+</li>
+<li><p><strong>尽量的扩展索引</strong>，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可。</p>
+</li>
+</ol>
+<h1 id="MySQL-问题调优"><a href="#MySQL-问题调优" class="headerlink" title="MySQL 问题调优"></a>MySQL 问题调优</h1><h2 id="SQL卡死"><a href="#SQL卡死" class="headerlink" title="SQL卡死"></a>SQL卡死</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><pre><code>客户私有化环境中执行sql文件时卡死，从现象上看是卡死在某一个语句，单独拿出来依然无法执行；从私有化环境中导出到开发环境执行，成功通过；初步怀疑是环境问题，从docker环境中新建一个相同的镜像环境，执行依然成功；问题卡住；
+我们从头开始分析：
+1、执行explain未发现问题
+2、执行show full proceelist 发现没有连接；
+此时还没发现问题，以为是卡在了语法解析阶段（因为sql特别大有7、8M）；
+后重新使用docker环境执行show full processlist 发现docker 上居然有！此时怀疑客户私有化环境上没连上server端，怀疑代理问题；让客户直连mysql，执行成功！！
+以上问题主要是对mysql的执行过程不太熟练导致，因此一下补充mysql执行过程已经mysql架构等知识；
+</code></pre>
+<h3 id="mysql架构"><a href="#mysql架构" class="headerlink" title="mysql架构"></a>mysql架构</h3><p>mysql架构分为以下三层</p>
+<ul>
+<li>客户端服务层：客户端服务层主要完成鉴权，链接处理，授权认证；</li>
+<li>核心服务层： 核心服务层包含链接线程池，查询解析，分析，优化，缓存，内置函数等；一切mysql的处理都在核心服务层；</li>
+<li>存储引擎层：负责mysql的存储以及提取；</li>
+</ul>
+<h3 id="sql语句执行分析"><a href="#sql语句执行分析" class="headerlink" title="sql语句执行分析"></a>sql语句执行分析</h3><ul>
+<li><p>万能的Explain（<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/explain-output.html%EF%BC%89">https://dev.mysql.com/doc/refman/8.0/en/explain-output.html）</a></p>
+<ul>
+<li>explain select * from table where Id&#x3D;1；</li>
+<li>explain 展示字段：</li>
+</ul>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id <span class="operator">|</span> select_type <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> type <span class="operator">|</span> possible_keys <span class="operator">|</span> key  <span class="operator">|</span> key_len <span class="operator">|</span> <span class="keyword">ref</span>  <span class="operator">|</span> <span class="keyword">rows</span>    <span class="operator">|</span> Extra       <span class="operator">|</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>processlist mysql server端中的连接；</p>
+<ul>
+<li>show full processlist</li>
+</ul>
+</li>
+</ul>
+<h3 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h3><h3 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h3><h3 id="SQL调优"><a href="#SQL调优" class="headerlink" title="SQL调优"></a>SQL调优</h3><h2 id="Mysql基础函数"><a href="#Mysql基础函数" class="headerlink" title="Mysql基础函数"></a>Mysql基础函数</h2><ul>
+<li><code>mysql</code> 中的各种调用函数，常用的时间转换函数</li>
+</ul>
+<h2 id="str-to-date-时间转换函数"><a href="#str-to-date-时间转换函数" class="headerlink" title="str_to_date 时间转换函数"></a><code>str_to_date</code> 时间转换函数</h2><p>在<code>mysql</code>中<code>str_to_date</code>函数是一个非常有用的函数，能够将字符串转换为日期格式；</p>
+<ul>
+<li><code>str_to_date(&#39;str&#39;,&#39;model&#39;)</code>;其中<code>model</code>是转换的格式<code>%Y-%m-%d %H:%i:%s</code>  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 示例：</span><br><span class="line">update saas_smart_list_content set startTime = STR_TO_DATE(&#x27;2022-04-01 17:46:38&#x27;, &#x27;%Y-%m-%d %H:%i:%s&#x27;) where startTime = STR_TO_DATE(&#x27;0000-00-00 00:00:00&#x27;, &#x27;%Y-%m-%d %H:%i:%s&#x27;) limit 1;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">select * from saas_smart_list_content where startTime &lt;= STR_TO_DATE(&#x27;2022-04-01 17:46:38&#x27;, &#x27;%Y-%m-%d %H:%i:%s&#x27;) limit 1;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/22/redis/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/04/14/C++%E6%8C%87%E9%92%88%E7%AF%87/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          المحتويات
+        </li>
+        <li class="sidebar-nav-overview">
+          عام
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Mysql-%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">Mysql 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql%E6%9E%B6%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">Mysql架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.</span> <span class="nav-text">MySQL 索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.1.</span> <span class="nav-text">索引的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.2.</span> <span class="nav-text">索引的分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">索引的数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash%E8%A1%A8"><span class="nav-number">1.3.1.</span> <span class="nav-text">Hash表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="nav-number">1.4.</span> <span class="nav-text">聚簇索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%BA%E7%B4%A2%E5%BC%95%E7%9A%84%E5%87%A0%E5%A4%A7%E5%8E%9F%E5%88%99"><span class="nav-number">1.4.1.</span> <span class="nav-text">建索引的几大原则</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL-%E9%97%AE%E9%A2%98%E8%B0%83%E4%BC%98"><span class="nav-number">2.</span> <span class="nav-text">MySQL 问题调优</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL%E5%8D%A1%E6%AD%BB"><span class="nav-number">2.1.</span> <span class="nav-text">SQL卡死</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">2.1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql%E6%9E%B6%E6%9E%84"><span class="nav-number">2.1.2.</span> <span class="nav-text">mysql架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sql%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E5%88%86%E6%9E%90"><span class="nav-number">2.1.3.</span> <span class="nav-text">sql语句执行分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%A6%E8%A7%A3"><span class="nav-number">2.1.4.</span> <span class="nav-text">详解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="nav-number">2.1.5.</span> <span class="nav-text">问题解决</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E8%B0%83%E4%BC%98"><span class="nav-number">2.1.6.</span> <span class="nav-text">SQL调优</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql%E5%9F%BA%E7%A1%80%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.</span> <span class="nav-text">Mysql基础函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#str-to-date-%E6%97%B6%E9%97%B4%E8%BD%AC%E6%8D%A2%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.</span> <span class="nav-text">str_to_date 时间转换函数</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">المقالات</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

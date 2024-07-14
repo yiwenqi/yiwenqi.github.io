@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Go pprof 可以让你清晰的知道,运行中程序是如何运行,此刻他又在经历些什么 我们由简入深,先知道如何使用他,再深入的了解他的功能,带入到实践当中  Go pprof 的使用当我们分析不同的内容时，我们需要使用到的文件也不同；  cpu（CPU Profiling）: &#x2F;debug&#x2F;pprof&#x2F;profile，默认进行 30s 的 CPU Profiling，得到一个分析用的 profile">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go pprof">
+<meta property="og:url" content="http://example.com/2023/08/22/pprof/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Go pprof 可以让你清晰的知道,运行中程序是如何运行,此刻他又在经历些什么 我们由简入深,先知道如何使用他,再深入的了解他的功能,带入到实践当中  Go pprof 的使用当我们分析不同的内容时，我们需要使用到的文件也不同；  cpu（CPU Profiling）: &#x2F;debug&#x2F;pprof&#x2F;profile，默认进行 30s 的 CPU Profiling，得到一个分析用的 profile">
+<meta property="og:locale">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/image-20230628232558050.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/image-20230628231851925.png">
+<meta property="article:published_time" content="2023-08-22T03:32:01.926Z">
+<meta property="article:modified_time" content="2023-08-22T03:32:01.926Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/image-20230628232558050.png">
+
+<link rel="canonical" href="http://example.com/2023/08/22/pprof/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Go pprof | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="تشغيل شريط التصفح">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/22/pprof/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go pprof
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+
+              <time title="أُنشأ: 2023-08-22 11:32:01" itemprop="dateCreated datePublished" datetime="2023-08-22T11:32:01+08:00">2023-08-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>Go pprof 可以让你清晰的知道,运行中程序是如何运行,此刻他又在经历些什么</p>
+<p>我们由简入深,先知道如何使用他,再深入的了解他的功能,带入到实践当中</p>
+</blockquote>
+<h1 id="Go-pprof-的使用"><a href="#Go-pprof-的使用" class="headerlink" title="Go pprof 的使用"></a>Go pprof 的使用</h1><p>当我们分析不同的内容时，我们需要使用到的文件也不同；</p>
+<ul>
+<li>cpu（CPU Profiling）: <code>/debug/pprof/profile</code>，默认进行 30s 的 CPU Profiling，得到一个分析用的 profile 文件</li>
+<li>block（Block Profiling）：<code>/debug/pprof/block</code>，查看导致阻塞同步的堆栈跟踪</li>
+<li>goroutine：<code>/debug/pprof/goroutine</code>，查看当前所有运行的 goroutines 堆栈跟踪</li>
+<li>heap（Memory Profiling）: <code>/debug/pprof/heap</code>，查看活动对象的内存分配情况</li>
+<li>mutex（Mutex Profiling）：<code>/debug/pprof/mutex</code>，查看导致互斥锁的竞争持有者的堆栈跟踪</li>
+<li>threadcreate：<code>/debug/pprof/threadcreate</code>，查看创建新OS线程的堆栈跟踪</li>
+</ul>
+<p>1、按照可视化工具<code>graphviz</code></p>
+<pre><code> 如果我们想要生成可视图,则需要安装 ` brew install graphviz`
+</code></pre>
+<p>2、生成分析文件	</p>
+<p>​	<code>Go pprof</code> 首先需要代码，引入了<code>net/http/pprof</code> ,通常来说,各种GoWeb框架会自带,例如字节的<code>Kitex</code>框架等; 如果代码中引入了<code>net/http/pprof</code>则无需进行其他操作;直接执行以下命令，若没有引用，则无法使用<code>pprof</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">weget http://127.0.0.1:80/pprof/profile</span><br></pre></td></tr></table></figure>
+
+<p>3、查看文件内容	</p>
+<p>​	执行上述操作后,会下载一个<code>profile</code>文件,我们下载到本地后使用 <code>go tool pprof filename</code> 查看内容;将<code>profile</code>文件下载后,执行<code>go tool pprof profile</code>即可查看内容；同时我们也可以执行<code>go tool pprof -http=:8080 profile</code>生成可视化界面,点击左上角的View即可查看火焰图;</p>
+<p>以上命令总结:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 使用go tool 工具在线看</span><br><span class="line">go tool pprof profile</span><br><span class="line"># 使用web页面查看火焰图等可视化图</span><br><span class="line">go tool pprof -http=:8080 profile</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/image-20230628232558050.png" alt="image-20230628232558050"></p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/image-20230628231851925.png" alt="image-20230628231851925"></p>
+<p>​	进入到命令页面之后,我们执行<code>top20</code>,打印消耗排名前20, 同时也可以输入<code>web</code>进入页面查看;</p>
+<h1 id="pprof-指标的含义"><a href="#pprof-指标的含义" class="headerlink" title="pprof 指标的含义"></a>pprof 指标的含义</h1><h2 id="flat-flat"><a href="#flat-flat" class="headerlink" title="flat flat%"></a>flat flat%</h2><p>flat:  代表一个函数内的directly操作的耗时</p>
+<p>flat:  代表flat&#x2F;总的运行时间,所有的flat相加即为总时间  </p>
+<ul>
+<li>directly 操作代表函数内部的CPU直接调用，若是调用其他函数等操作则不是directly操作；</li>
+<li>flat越大，代表这个函数的cpu处理较多</li>
+</ul>
+<h2 id="cum-cum"><a href="#cum-cum" class="headerlink" title="cum cum%"></a>cum cum%</h2><p>cum:  代表一个函数内所有物理操作的耗时</p>
+<p>cum:  代表cum&#x2F;总的运行时间</p>
+<ul>
+<li>cum越高代表某个函数执行的时间越长，此函数的性能越低；</li>
+</ul>
+<h2 id="sum"><a href="#sum" class="headerlink" title="sum"></a>sum</h2><p>sum代表以上行所有flat相加</p>
+<h1 id="火焰图"><a href="#火焰图" class="headerlink" title="火焰图"></a>火焰图</h1><p>火焰图分为两种：on_cpu, off_cpu</p>
+<table>
+<thead>
+<tr>
+<th>火焰图类型</th>
+<th>横轴含义</th>
+<th>纵轴含义</th>
+<th>解决问题</th>
+<th>采样方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cpu火焰图</td>
+<td>cpu占用时间</td>
+<td>调用栈</td>
+<td>找出cpu占用高的问题函数，分析代码热路径；</td>
+<td>固定频率采样cpu调用栈；</td>
+</tr>
+<tr>
+<td>off-cpu火焰图</td>
+<td>阻塞时间</td>
+<td>调用栈</td>
+<td>i&#x2F;o、网络等阻塞场景导致的性能下降；竞争锁，死锁导致的性能下降问题；</td>
+<td>固定频率采样阻塞事件调<br/>用栈</td>
+</tr>
+<tr>
+<td>内存火焰图</td>
+<td>内存申请&#x2F;释放函数调用次数</td>
+<td>调用栈</td>
+<td>内存泄露问题；内存占用高的对用象&#x2F;申请内存多的函数；虚拟内存栈或物理内存泄露问题；</td>
+<td>跟踪调用栈</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/22/prometheus/client_go/" rel="prev" title="prometheus/client_go">
+      <i class="fa fa-chevron-left"></i> prometheus/client_go
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/22/redis/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          المحتويات
+        </li>
+        <li class="sidebar-nav-overview">
+          عام
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-pprof-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Go pprof 的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pprof-%E6%8C%87%E6%A0%87%E7%9A%84%E5%90%AB%E4%B9%89"><span class="nav-number">2.</span> <span class="nav-text">pprof 指标的含义</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#flat-flat"><span class="nav-number">2.1.</span> <span class="nav-text">flat flat%</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cum-cum"><span class="nav-number">2.2.</span> <span class="nav-text">cum cum%</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sum"><span class="nav-number">2.3.</span> <span class="nav-text">sum</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%81%AB%E7%84%B0%E5%9B%BE"><span class="nav-number">3.</span> <span class="nav-text">火焰图</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">المقالات</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
