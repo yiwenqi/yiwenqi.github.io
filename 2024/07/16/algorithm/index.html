@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="快排原理-分治思想​	快排的基本思想是分而治之：首先使用双指针在两边，同时选择指针中间的任意一个数据作为基准点，大于基准点的放右边，小于基准点的放左边； 直到基准点左边都比基准点小，右边都比基准点大；再进行递归计算；  12345678910111213141516171819202122232425262728293031323334353637383940414243func main() &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常用算法">
+<meta property="og:url" content="http://example.com/2024/07/16/algorithm/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="快排原理-分治思想​	快排的基本思想是分而治之：首先使用双指针在两边，同时选择指针中间的任意一个数据作为基准点，大于基准点的放右边，小于基准点的放左边； 直到基准点左边都比基准点小，右边都比基准点大；再进行递归计算；  12345678910111213141516171819202122232425262728293031323334353637383940414243func main() &amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%BF%AB%E6%8E%92.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%85%A8%E6%8E%92%E5%88%97-%E5%9B%9E%E6%BA%AF%E6%80%9D%E6%83%B3.png">
+<meta property="article:published_time" content="2024-07-16T03:45:09.323Z">
+<meta property="article:modified_time" content="2024-07-21T07:53:44.775Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%BF%AB%E6%8E%92.png">
+
+<link rel="canonical" href="http://example.com/2024/07/16/algorithm/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>常用算法 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/16/algorithm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          常用算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-16 11:45:09" itemprop="dateCreated datePublished" datetime="2024-07-16T11:45:09+08:00">2024-07-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-07-21 15:53:44" itemprop="dateModified" datetime="2024-07-21T15:53:44+08:00">2024-07-21</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="快排原理-分治思想"><a href="#快排原理-分治思想" class="headerlink" title="快排原理-分治思想"></a>快排原理-分治思想</h2><p>​	快排的基本思想是<strong>分而治之</strong>：首先使用双指针在两边，同时选择<strong>指针中间的任意一个数据作为基准点</strong>，大于基准点的放右边，小于基准点的放左边；</p>
+<p>直到基准点左边都比基准点小，右边都比基准点大；再进行递归计算；</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%BF%AB%E6%8E%92.png" alt="快排"></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	arr := []<span class="type">int</span>&#123;<span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">17</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">1</span>, <span class="number">33</span>, <span class="number">101</span>, <span class="number">2</span>, <span class="number">16</span>, <span class="number">3</span>, <span class="number">22</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">91</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">20</span>&#125;</span><br><span class="line">	fmt.Println(<span class="string">&quot;start&quot;</span>)</span><br><span class="line">	quickSort(arr)</span><br><span class="line">	fmt.Println(arr)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">quickSort</span><span class="params">(array []<span class="type">int</span>)</span></span> []<span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(array) &lt;= <span class="number">1</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> array</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 选择中间作为基准值</span></span><br><span class="line">	left, right := <span class="number">0</span>, <span class="built_in">len</span>(array)<span class="number">-1</span></span><br><span class="line">	pivot := array[(left+right)/<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 分区操作</span></span><br><span class="line">	<span class="keyword">for</span> left &lt;= right &#123;</span><br><span class="line">		<span class="keyword">for</span> array[left] &lt; pivot &#123;</span><br><span class="line">			left++</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> array[right] &gt; pivot &#123;</span><br><span class="line">			right--</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 此处必须是等于，当在最后一次循环时，若不是 == ，则会一直卡在最后一次循环；left，right无法退出；</span></span><br><span class="line">		<span class="keyword">if</span> left &lt;= right &#123;</span><br><span class="line">			array[left], array[right] = array[right], array[left]</span><br><span class="line">			left++</span><br><span class="line">			right--</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 递归排序</span></span><br><span class="line">	<span class="keyword">if</span> right &gt; <span class="number">0</span> &#123;</span><br><span class="line">		quickSort(array[:right+<span class="number">1</span>])</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> left &lt; <span class="built_in">len</span>(array) &#123;</span><br><span class="line">		quickSort(array[left:])</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> array</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="全排列算法-回溯思想"><a href="#全排列算法-回溯思想" class="headerlink" title="全排列算法-回溯思想"></a>全排列算法-回溯思想</h2><p>问题：列出一个数组中元素的所有排列组合；eg: []int{1,2,3}</p>
+<ul>
+<li>[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%85%A8%E6%8E%92%E5%88%97-%E5%9B%9E%E6%BA%AF%E6%80%9D%E6%83%B3.png" alt="全排列-回溯思想"></p>
+<p>示例代码：全排列</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	nums := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">	res, path = <span class="built_in">make</span>([][]<span class="type">int</span>, <span class="number">0</span>), <span class="built_in">make</span>([]<span class="type">int</span>, <span class="number">0</span>, <span class="built_in">len</span>(nums))</span><br><span class="line">	st = <span class="built_in">make</span>([]<span class="type">bool</span>, <span class="built_in">len</span>(nums))</span><br><span class="line">	</span><br><span class="line">	Dfs(nums, <span class="number">0</span>)</span><br><span class="line">	fmt.Println(res)</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Dfs</span><span class="params">(nums []<span class="type">int</span>, cur <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;start&quot;</span>)</span><br><span class="line">	<span class="comment">// 退出条件 当遍历位置为最后一个索引时</span></span><br><span class="line">	<span class="keyword">if</span> cur == <span class="built_in">len</span>(nums) &#123;</span><br><span class="line">		tmp := <span class="built_in">make</span>([]<span class="type">int</span>, <span class="built_in">len</span>(nums))</span><br><span class="line">		<span class="built_in">copy</span>(tmp, path)</span><br><span class="line">		res = <span class="built_in">append</span>(res, path)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(nums); i++ &#123;</span><br><span class="line">		<span class="keyword">if</span> !st[i] &#123;</span><br><span class="line">			<span class="comment">//fmt.Println(&quot;i:&quot;, i)</span></span><br><span class="line">			fmt.Println(path)</span><br><span class="line">			path = <span class="built_in">append</span>(path, nums[i])</span><br><span class="line">            <span class="comment">// 标记当前位置已经被占用</span></span><br><span class="line">			st[i] = <span class="literal">true</span></span><br><span class="line">            <span class="comment">// 递归下一个位置</span></span><br><span class="line">			Dfs(nums, cur+<span class="number">1</span>)</span><br><span class="line">            <span class="comment">// 递归结束，回溯，将上一个位置释放</span></span><br><span class="line">			st[i] = <span class="literal">false</span></span><br><span class="line">			path = path[:<span class="built_in">len</span>(path)<span class="number">-1</span>]</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h2><h3 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h3><h4 id="LRU-算法"><a href="#LRU-算法" class="headerlink" title="LRU 算法"></a>LRU 算法</h4><p>​	LRU缓存（最近最少使用）数据结构，使用一个 <code>HashMap</code> 进行O(1)的查询，并使用双向链表作为数据存储结构；</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> algorithm</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LRUCache <span class="keyword">struct</span> &#123;</span><br><span class="line">	Capacity   <span class="type">int</span></span><br><span class="line">	Size       <span class="type">int</span></span><br><span class="line">	Head, Tail *DLinkedNode</span><br><span class="line">	cache      <span class="keyword">map</span>[<span class="type">int</span>]*DLinkedNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> DLinkedNode <span class="keyword">struct</span> &#123;</span><br><span class="line">	Prev, Next *DLinkedNode</span><br><span class="line">	Key, Value <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initDLinkedNode</span><span class="params">()</span></span> *DLinkedNode &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;DLinkedNode&#123;</span><br><span class="line">		Prev: <span class="literal">nil</span>,</span><br><span class="line">		Next: <span class="literal">nil</span>,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Constructor</span><span class="params">(capacity <span class="type">int</span>)</span></span> LRUCache &#123;</span><br><span class="line">	l := LRUCache&#123;</span><br><span class="line">		Capacity: capacity,</span><br><span class="line">		Head:     initDLinkedNode(),</span><br><span class="line">		Tail:     initDLinkedNode(),</span><br><span class="line">		cache:    <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">int</span>]*DLinkedNode),</span><br><span class="line">	&#125;</span><br><span class="line">	l.Head.Next = l.Tail</span><br><span class="line">	l.Tail.Prev = l.Head</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> l</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> MoveToHead(node *DLinkedNode) <span class="type">bool</span> &#123;</span><br><span class="line">	this.removeNode(node)</span><br><span class="line">	this.AddToHead(node)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> removeNode(node *DLinkedNode) &#123;</span><br><span class="line">	node.Prev.Next = node.Next</span><br><span class="line">	node.Next.Prev = node.Prev</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> AddToHead(node *DLinkedNode) <span class="type">bool</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 移动到head head.next =&gt; tmp head.next = node,</span></span><br><span class="line"><span class="comment">	tmp.pre =&gt; node, node.pre =&gt; head, node.next = tmp</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line"></span><br><span class="line">	node.Prev = this.Head</span><br><span class="line">	node.Next = this.Head.Next</span><br><span class="line">	this.Head.Next.Prev = node</span><br><span class="line">	this.Head.Next = node</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> removeTail() *DLinkedNode &#123;</span><br><span class="line">	node := this.Tail.Prev</span><br><span class="line">	this.removeNode(node)</span><br><span class="line">	<span class="keyword">return</span> node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> Get(key <span class="type">int</span>) <span class="type">int</span> &#123;</span><br><span class="line">	<span class="comment">// 判断是否存在</span></span><br><span class="line">	<span class="keyword">if</span> _, ok := this.cache[key]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 判断value是否为nil</span></span><br><span class="line">	node := this.cache[key]</span><br><span class="line">	<span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将node移动至头指针</span></span><br><span class="line">	ok := this.MoveToHead(node)</span><br><span class="line">	<span class="keyword">if</span> ok &#123;</span><br><span class="line">		<span class="keyword">return</span> node.Value</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> Put(key <span class="type">int</span>, value <span class="type">int</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> _, ok := this.cache[key]; !ok &#123;</span><br><span class="line">		node := initDLinkedNode()</span><br><span class="line">		node.Key = key</span><br><span class="line">		node.Value = value</span><br><span class="line">		this.cache[key] = node</span><br><span class="line">		this.AddToHead(node)</span><br><span class="line">		this.Size++</span><br><span class="line">		<span class="keyword">if</span> this.Size &gt; this.Capacity &#123;</span><br><span class="line">			removed := this.removeTail()</span><br><span class="line">			<span class="built_in">delete</span>(this.cache, removed.Key)</span><br><span class="line">			this.Size--</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		node := this.cache[key]</span><br><span class="line">		node.Value = value</span><br><span class="line">		this.MoveToHead(node)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h2><p><strong>堆的定义</strong>：</p>
+<ul>
+<li>堆是一个完全二叉树（完全二叉树，所有节点被子节点填满，子节点从左向右填）</li>
+<li>堆上的每个节点的值必须大于或等于（或小于, 小堆顶为小于）其子树中的每个节点值；</li>
+</ul>
+<p><strong>堆的存储</strong>：</p>
+<ul>
+<li>堆是一个完全二叉树，因此可以使用数组来存储；连续的空间更加节省内存；</li>
+</ul>
+<p><strong>堆的几个关键公式</strong>：第一个元素从下标1 开始；</p>
+<p><code>i  </code>  代表节点下标索引,<code>n  </code>  代表节点个数；</p>
+<ul>
+<li><code>2i </code> 为其左节点， <code>2i+1</code>为其右节点下标；<code>i/2</code>为其父节点；</li>
+<li>所有的叶子节点下标范围：<code>n/2 + 1 ~ n</code></li>
+</ul>
+<h3 id="建堆"><a href="#建堆" class="headerlink" title="建堆"></a>建堆</h3><p>1、堆化</p>
+<p>​	当我们有一个堆时，需要往堆插入元素，此时将元素插入数组的末尾，此时不满足堆的子节点比堆小的条件，此时堆需要进行调整，这个调整的过程就是堆化；</p>
+<p>​	堆化分为：自下而上和自上而下；先说自上而下，将第 i 个元素依次与叶子节点比较，选择最大元素，交换第 i 个元素与最大元素之间的位置，然后继续比较该元素与其所在叶子节点之间的大小， 循环执行，直到该元素比其叶子节点大；</p>
+<p>heapify: 从父节点，左子节点，右子节点之间选择最大的元素作为他们的root；循环执行直到其元素大于等于其叶子节点；</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Heapify</span><span class="params">(a []<span class="type">int</span>, n <span class="type">int</span>, index <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		maxIndex := index</span><br><span class="line">		<span class="keyword">if</span> <span class="number">2</span>*index &lt; n &amp;&amp; a[maxIndex] &lt; a[<span class="number">2</span>*index] &#123;</span><br><span class="line">			maxIndex = <span class="number">2</span> * index</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> <span class="number">2</span>*index+<span class="number">1</span> &lt; n &amp;&amp; a[maxIndex] &lt; a[<span class="number">2</span>*index+<span class="number">1</span>] &#123;</span><br><span class="line">			maxIndex = <span class="number">2</span>*index + <span class="number">1</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> maxIndex == index &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		swap(a, index, maxIndex)</span><br><span class="line">		index = maxIndex</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>BuildHeap: 构建堆，由于其叶子节点无需堆化，因此只需要依次对 <code>2*n ~ 1</code>元素下标进行堆化即可；</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> algorithm</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">swap</span><span class="params">(a []<span class="type">int</span>, index <span class="type">int</span>, maxpos <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	tmp := a[index]</span><br><span class="line">	a[index] = a[maxpos]</span><br><span class="line">	a[maxpos] = tmp</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BuildHeap</span><span class="params">(a []<span class="type">int</span>, n <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := n / <span class="number">2</span>; i &gt;= <span class="number">1</span>; i-- &#123;</span><br><span class="line">		Heapify(a, n, i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Insert 自下而上的堆化</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Insert</span><span class="params">(a []<span class="type">int</span>, n, val <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(a)<span class="number">-1</span> &gt;= n &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	a = <span class="built_in">append</span>(a, val)</span><br><span class="line">	pos := <span class="built_in">len</span>(a)</span><br><span class="line">	<span class="keyword">for</span> i := pos / <span class="number">2</span>; i &gt;= <span class="number">1</span>; &#123;</span><br><span class="line">		<span class="keyword">if</span> a[i] &lt; a[i*<span class="number">2</span>] &#123;</span><br><span class="line">			swap(a, i, pos)</span><br><span class="line">		&#125;</span><br><span class="line">		i = i / <span class="number">2</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="实际应用-1"><a href="#实际应用-1" class="headerlink" title="实际应用"></a>实际应用</h3><h4 id="合并多个有序文件"><a href="#合并多个有序文件" class="headerlink" title="合并多个有序文件"></a>合并多个有序文件</h4><p>维护一个堆，从多个小文件中获取一个字符串到堆中（有序的文件，因此字符串也是排序之后的），将堆顶元素写入大文件中，继续从刚刚拿到字符串的文件中取下一个字符串；直到所有字符串排序；</p>
+<h4 id="大数据量（10亿）求topK"><a href="#大数据量（10亿）求topK" class="headerlink" title="大数据量（10亿）求topK"></a>大数据量（10亿）求topK</h4><p>将10亿数据进行分片，每个文件包含1亿的数据；依次堆小文件进行topk排序，获取每个小文件的topk；然后用这些小文件的topk重新组织一个堆，获取前K个数据；就是这10亿数据的topK；</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/07/15/Go-%E8%BF%9B%E9%98%B6/" rel="prev" title="Go 进阶">
+      <i class="fa fa-chevron-left"></i> Go 进阶
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E6%8E%92%E5%8E%9F%E7%90%86-%E5%88%86%E6%B2%BB%E6%80%9D%E6%83%B3"><span class="nav-number">1.</span> <span class="nav-text">快排原理-分治思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%8E%92%E5%88%97%E7%AE%97%E6%B3%95-%E5%9B%9E%E6%BA%AF%E6%80%9D%E6%83%B3"><span class="nav-number">2.</span> <span class="nav-text">全排列算法-回溯思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">双向链表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">实际应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LRU-%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.1.</span> <span class="nav-text">LRU 算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E6%8E%92%E5%BA%8F"><span class="nav-number">4.</span> <span class="nav-text">堆排序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%BA%E5%A0%86"><span class="nav-number">4.1.</span> <span class="nav-text">建堆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8-1"><span class="nav-number">4.2.</span> <span class="nav-text">实际应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%88%E5%B9%B6%E5%A4%9A%E4%B8%AA%E6%9C%89%E5%BA%8F%E6%96%87%E4%BB%B6"><span class="nav-number">4.2.1.</span> <span class="nav-text">合并多个有序文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%EF%BC%8810%E4%BA%BF%EF%BC%89%E6%B1%82topK"><span class="nav-number">4.2.2.</span> <span class="nav-text">大数据量（10亿）求topK</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
