@@ -145,6 +145,406 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/03/12/Redis%E8%BF%9B%E9%98%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/12/Redis%E8%BF%9B%E9%98%B6/" class="post-title-link" itemprop="url">Redis进阶</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-12 22:27:00 / 修改时间：22:27:17" itemprop="dateCreated datePublished" datetime="2025-03-12T22:27:00+08:00">2025-03-12</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><h2 id="基础命令"><a href="#基础命令" class="headerlink" title="基础命令"></a>基础命令</h2><p>key 命令：</p>
+<table>
+<thead>
+<tr>
+<th align="center">序号</th>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td>del key</td>
+<td>删除指定的key， 可以同时删除多个：del key1 key2 …</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td>dump key</td>
+<td>序列号给定key</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td>exist key</td>
+<td>检查key是否存在</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td>expire key second</td>
+<td>给key设置过期时间</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td>key pattern</td>
+<td>查找所有符合（pattern）的key； （*代表多个，？代表一个）</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td>persist key</td>
+<td>移除key的过期时间</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td>ttl key</td>
+<td>返回key的剩余生存时间</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td>type key</td>
+<td>返回key的类型</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>String 命令：</p>
+<table>
+<thead>
+<tr>
+<th align="left">命令</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">SET</td>
+<td align="left">设置指定 key 的值</td>
+</tr>
+<tr>
+<td align="left">GET</td>
+<td align="left">获取指定 key 的值</td>
+</tr>
+<tr>
+<td align="left">getrange</td>
+<td align="left">返回 key 中字符串值的子字符</td>
+</tr>
+<tr>
+<td align="left">getset</td>
+<td align="left">将给定 key 的值设为 value ，并返回 key 的旧值 ( old value )</td>
+</tr>
+<tr>
+<td align="left">mget</td>
+<td align="left">获取所有(一个或多个)给定 key 的值</td>
+</tr>
+<tr>
+<td align="left">setex</td>
+<td align="left">设置 key 的值为 value 同时将过期时间设为 seconds</td>
+</tr>
+<tr>
+<td align="left">setnx</td>
+<td align="left">只有在 key 不存在时设置 key 的值</td>
+</tr>
+<tr>
+<td align="left">mset</td>
+<td align="left">同时设置一个或多个 key-value 对</td>
+</tr>
+<tr>
+<td align="left">incr</td>
+<td align="left">将 key 中储存的数字值增一</td>
+</tr>
+<tr>
+<td align="left">append</td>
+<td align="left">将 value 追加到 key 原来的值的末尾</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p>Hash 命令：</p>
+<table>
+<thead>
+<tr>
+<th align="left">命令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">HDEL key field1 [field2]</td>
+<td align="left">删除一个或多个hash字段</td>
+</tr>
+<tr>
+<td align="left">Hget key field</td>
+<td align="left">获取哈希表中指定字段的值</td>
+</tr>
+<tr>
+<td align="left">Hkeys key</td>
+<td align="left">获取哈希表中所有字段</td>
+</tr>
+<tr>
+<td align="left">HValue</td>
+<td align="left">获取哈希表中所有值</td>
+</tr>
+<tr>
+<td align="left">Hset key filed value</td>
+<td align="left">将哈希表key中的字段field设置为value</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p>更多资料查看：<a target="_blank" rel="noopener" href="https://redis.com.cn/commands.html">https://redis.com.cn/commands.html</a></p>
+<h2 id="Redis中不同的类型的数据结构"><a href="#Redis中不同的类型的数据结构" class="headerlink" title="Redis中不同的类型的数据结构"></a>Redis中不同的类型的数据结构</h2><ul>
+<li>介绍：redis中有以下五种数据结构<ul>
+<li>string ， list， hash，set， zset（有序集合列表）</li>
+</ul>
+</li>
+</ul>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><ul>
+<li>介绍：string类型的底层数据结构实现主要是int，sds（简单动态字符串），与常规C字符串的区别是：<ul>
+<li>SDS不仅可以保存文本数据，还可以保存二进制数据；</li>
+<li>**SDS 获取字符串长度的时间复杂度是 O(1)**。因为 C 语言的字符串并不记录自身长度，所以获取长度的复杂度为 O(n)；而 SDS 结构里用 <code>len</code> 属性记录了字符串长度，所以复杂度为 <code>O(1)</code>。</li>
+<li><strong>Redis 的 SDS API 是安全的，拼接字符串不会造成缓冲区溢出</strong>。因为 SDS 在拼接字符串之前会检查</li>
+</ul>
+</li>
+</ul>
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><p>List 类型的底层数据结构是由<strong>双向链表或压缩列表</strong>实现的：</p>
+<ul>
+<li>如果列表的元素个数小于 <code>512</code> 个（默认值，可由 <code>list-max-ziplist-entries</code> 配置），列表每个元素的值都小于 <code>64</code> 字节（默认值，可由 <code>list-max-ziplist-value</code> 配置），Redis 会使用<strong>压缩列表</strong>作为 List 类型的底层数据结构；</li>
+<li>如果列表的元素不满足上面的条件，Redis 会使用<strong>双向链表</strong>作为 List 类型的底层数据结构；</li>
+</ul>
+<p>但是<strong>在 Redis 3.2 版本之后，List 数据类型底层数据结构就只由 quicklist 实现了，替代了双向链表和压缩列表</strong></p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_list_%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0.png" alt="redis_list_内部实现"></p>
+<p>常用命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 将一个或多个值value插入到key列表的表头(最左边)，最后的值在最前面</span><br><span class="line">LPUSH key value [value ...] </span><br><span class="line"># 将一个或多个值value插入到key列表的表尾(最右边)</span><br><span class="line">RPUSH key value [value ...]</span><br><span class="line"># 移除并返回key列表的头元素</span><br><span class="line">LPOP key     </span><br><span class="line"># 移除并返回key列表的尾元素</span><br><span class="line">RPOP key </span><br><span class="line"></span><br><span class="line"># 返回列表key中指定区间内的元素，区间以偏移量start和stop指定，从0开始</span><br><span class="line">LRANGE key start stop</span><br><span class="line"></span><br><span class="line"># 从key列表表头弹出一个元素，没有就阻塞timeout秒，如果timeout=0则一直阻塞</span><br><span class="line">BLPOP key [key ...] timeout</span><br><span class="line"># 从key列表表尾弹出一个元素，没有就阻塞timeout秒，如果timeout=0则一直阻塞</span><br><span class="line">BRPOP key [key ...] timeout</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h4><h5 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h5><p>消息队列在存取消息时，必须要满足两个需求，分别是<strong>消息保序、和保证消息可靠性</strong>。</p>
+<p>1、如何满足消息的顺序性；</p>
+<p>​    List本身就是按照先进先出的顺序对数据进行存取；因此本身数据结构就支持顺序性；</p>
+<p>​	我们在使用List的时候按照：LPUST+RPOP（或者反过来RPUSH+LPOP），即可实现顺序性；</p>
+<p>2、若列表中没有数据，消费者会不断的循环加载，消耗CPU性能；此时可以使用<code>BRPOP</code>，当没有内容时会进行阻塞，但是同样当限制时间过长时会<strong>断开连接</strong>；此时需要进行<strong>异常处理重试</strong>；</p>
+<p>3、如何保证消息可靠性？</p>
+<p>​	 当服务拿到消费数据时出现异常，此时以前的数据将会丢失；为了留存消息，List 类型提供了 <code>BRPOPLPUSH</code> 命令，这个命令的<strong>作用是让消费者程序从一个 List 中读取消息，同时，Redis 会把这个消息再插入到另一个 List（可以叫作备份 List）留存</strong>。</p>
+<p>缺陷：</p>
+<ul>
+<li>不支持多个消费者消费同一条消息；</li>
+</ul>
+<h3 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h3><p>介绍：Hash 是一个键值对（key - value）集合，其中 value 的形式如： <code>value=[&#123;field1，value1&#125;，...&#123;fieldN，valueN&#125;]</code>。Hash 特别适合用于存储对象。</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/hash%E4%B8%8Estring.png" alt="hash与string"></p>
+<h4 id="内部实现"><a href="#内部实现" class="headerlink" title="内部实现"></a>内部实现</h4><p>Hash 类型的底层数据结构是由<strong>压缩列表或哈希表</strong>实现的：</p>
+<ul>
+<li>如果哈希类型元素个数小于 <code>512</code> 个（默认值，可由 <code>hash-max-ziplist-entries</code> 配置），所有值小于 <code>64</code> 字节（默认值，可由 <code>hash-max-ziplist-value</code> 配置）的话，Redis 会使用<strong>压缩列表</strong>作为 Hash 类型的底层数据结构；</li>
+<li>如果哈希类型元素不满足上面条件，Redis 会使用<strong>哈希表</strong>作为 Hash 类型的 底层数据结构。</li>
+</ul>
+<h4 id="应用场景-1"><a href="#应用场景-1" class="headerlink" title="应用场景"></a>应用场景</h4><h5 id="缓存对象"><a href="#缓存对象" class="headerlink" title="缓存对象"></a>缓存对象</h5><p>Hash 类型的 （key，field， value） 的结构与对象的（对象id， 属性， 值）的结构相似，也可以用来存储对象。</p>
+<p>我们以用户信息为例，它在关系型数据库中的结构是这样的：</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF.webp" alt="用户信息"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; HMSET uid:1 name Tom age 15</span><br><span class="line">2</span><br><span class="line"># 存储一个哈希表uid:2的键值</span><br><span class="line">&gt; HMSET uid:2 name Jerry age 13</span><br><span class="line">2</span><br><span class="line"># 获取哈希表用户id为1中所有的键值</span><br><span class="line">&gt; HGETALL uid:1</span><br><span class="line">1) &quot;name&quot;</span><br><span class="line">2) &quot;Tom&quot;</span><br><span class="line">3) &quot;age&quot;</span><br><span class="line">4) &quot;15&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h4><p>介绍：Set 类型是一个无序并唯一的键值集合，它的存储顺序不会按照插入的先后顺序进行存储。</p>
+<p>Set 类型的底层数据结构是由<strong>哈希表或整数集合</strong>实现的：</p>
+<ul>
+<li>如果集合中的元素都是整数且元素个数小于 <code>512</code> （默认值，<code>set-maxintset-entries</code>配置）个，Redis 会使用<strong>整数集合</strong>作为 Set 类型的底层数据结构；</li>
+<li>如果集合中的元素不满足上面条件，则 Redis 使用<strong>哈希表</strong>作为 Set 类型的底层数据结构。</li>
+</ul>
+<p>redis 运算操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 交集运算</span><br><span class="line">SINTER key [key ...]</span><br><span class="line"># 将交集结果存入新集合destination中</span><br><span class="line">SINTERSTORE destination key [key ...]</span><br><span class="line"></span><br><span class="line"># 并集运算</span><br><span class="line">SUNION key [key ...]</span><br><span class="line"># 将并集结果存入新集合destination中</span><br><span class="line">SUNIONSTORE destination key [key ...]</span><br><span class="line"></span><br><span class="line"># 差集运算</span><br><span class="line">SDIFF key [key ...]</span><br><span class="line"># 将差集结果存入新集合destination中</span><br><span class="line">SDIFFSTORE destination key [key ...]</span><br></pre></td></tr></table></figure>
+
+<h5 id="应用场景-2"><a href="#应用场景-2" class="headerlink" title="应用场景"></a>应用场景</h5><p>集合的主要几个特性，无序、不可重复、支持并交差等操作。</p>
+<p>因此 Set 类型比较适合用来数据去重和保障数据的唯一性，还可以用来统计多个集合的交集、错集和并集等，当我们存储的数据是无序并且需要去重的情况下，比较适合使用集合类型进行存储。</p>
+<p>但是要提醒你一下，这里有一个潜在的风险。<strong>Set 的差集、并集和交集的计算复杂度较高，在数据量较大的情况下，如果直接执行这些计算，会导致 Redis 实例阻塞</strong>。</p>
+<p>在主从集群中，为了避免主库因为 Set 做聚合计算（交集、差集、并集）时导致主库被阻塞，我们可以选择一个从库完成聚合统计，或者把数据返回给客户端，由客户端来完成聚合统计；</p>
+<h6 id="点赞"><a href="#点赞" class="headerlink" title="点赞"></a>点赞</h6><p>Set 类型可以保证一个用户只能点一个赞，这里举例子一个场景，key 是文章id，value 是用户id</p>
+<h6 id="共同关注"><a href="#共同关注" class="headerlink" title="共同关注"></a>共同关注</h6><p>Set 类型支持交集运算，所以可以用来计算共同关注的好友、公众号等。</p>
+<h6 id="抽奖活动"><a href="#抽奖活动" class="headerlink" title="抽奖活动"></a>抽奖活动</h6><p>存储某活动中中奖的用户名 ，Set 类型因为有去重功能，可以保证同一个用户不会中奖两次</p>
+<h4 id="ZSet"><a href="#ZSet" class="headerlink" title="ZSet"></a>ZSet</h4><p>介绍：Zset 类型（有序集合类型）相比于 Set 类型多了一个排序属性 score（分值），对于有序集合 ZSet 来说，每个存储元素相当于有两个值组成的，一个是有序集合的元素值，一个是排序值。</p>
+<p>Zset 类型的底层数据结构是由<strong>压缩列表或跳表</strong>实现的：</p>
+<ul>
+<li>如果有序集合的元素个数小于 <code>128</code> 个，并且每个元素的值小于 <code>64</code> 字节时，Redis 会使用<strong>压缩列表</strong>作为 Zset 类型的底层数据结构；</li>
+<li>如果有序集合的元素不满足上面的条件，Redis 会使用<strong>跳表</strong>作为 Zset 类型的底层数据结构；</li>
+</ul>
+<h5 id="应用场景-3"><a href="#应用场景-3" class="headerlink" title="应用场景"></a>应用场景</h5><ul>
+<li>排行榜</li>
+<li>电话、姓名排序</li>
+</ul>
+<h4 id="BitMap"><a href="#BitMap" class="headerlink" title="BitMap"></a>BitMap</h4><p>介绍：Bitmap，即位图，是一串连续的二进制数组（0和1），可以通过偏移量（offset）定位元素。</p>
+<h5 id="内部实现-1"><a href="#内部实现-1" class="headerlink" title="内部实现"></a>内部实现</h5><p>Bitmap 本身是用 String 类型作为底层数据结构实现的一种统计二值状态的数据类型。</p>
+<p>String 类型是会保存为二进制的字节数组，所以，Redis 就把字节数组的每个 bit 位利用起来，用来表示一个元素的二值状态，你可以把 Bitmap 看作是一个 bit 数组。</p>
+<h5 id="应用场景-4"><a href="#应用场景-4" class="headerlink" title="应用场景"></a>应用场景</h5><p>签到统计（只有0&#x2F;1）,判断用户登陆态 , 连续签到用户总数</p>
+<h4 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h4><p>介绍：redis 2.8.9 版本新增类型。提供不精确的去重计算，官方提供误差率不超过0.81%</p>
+<p>应用场景：百万级别网页UV计数；</p>
+<h4 id="GEO"><a href="#GEO" class="headerlink" title="GEO"></a>GEO</h4><p>介绍：redis GEO 是Redis3.2版本新增的数据类型，主要用于存储地理位置信息；</p>
+<p>GEO 本身并没有设计新的底层数据结构，而是直接使用了 Sorted Set 集合类型。</p>
+<p>GEO 类型使用 GeoHash 编码方法实现了经纬度到 Sorted Set 中元素权重分数的转换，这其中的两个关键机制就是「对二维地图做区间划分」和「对区间进行编码」。一组经纬度落在某个区间后，就用区间的编码值来表示，并把编码值作为 Sorted Set 元素的权重分数；</p>
+<h4 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h4><p>介绍：redis 5.0 版本新增的数据类型，Redis专门为消息队列设计的数据类型；</p>
+<p>背景：之前<code>list</code>实现的消息队列有以下缺点</p>
+<ul>
+<li>发布订阅模式，不能持久化无法可靠的保存消息；重连的客户端无法读到历史记录；</li>
+<li>List实现消息队列无法进行重复消费，消息消费完之后就会被删除；</li>
+</ul>
+<p>基于以上问题：</p>
+<p>Stream类型</p>
+<ul>
+<li>支持消息的持久化，支持自动生成全局唯一ID，支持ACK确认的模式，支持消费组模式；</li>
+</ul>
+<h3 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h3><h4 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h4><p>介绍：<code>RDB</code>文件内容是二进制数据， 默认开启；RDB 快照就是记录某一个瞬间的内存数据，记录的是实际数据；因此在 Redis 恢复数据时，RDB 恢复数据的效率会比 AOF 高些；</p>
+<p>Redis 提供了两个命令来生成 RDB 文件，分别是 <code>save</code> 和 <code>bgsave</code>，他们的区别就在于是否在「主线程」里执行：</p>
+<ul>
+<li>执行了 save 命令，就会在主线程生成 RDB 文件，由于和执行操作命令在同一个线程，所以如果写入 RDB 文件的时间太长，<strong>会阻塞主线程</strong>；</li>
+<li>执行了 bgsave 命令，会创建一个子进程来生成 RDB 文件，这样可以<strong>避免主线程的阻塞</strong>；</li>
+</ul>
+<h4 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h4><p>介绍：<code>AOF（Append Only File）</code>,将redis执行的每条写操作命令都追加到一个文件里；默认不开启；</p>
+<p><strong>AOF先执行写操作命令</strong>，执行成功之后才会进行持久化保存, 这样做有以下几个优势：</p>
+<ul>
+<li>避免额外的语法检查开销</li>
+<li>不会阻塞当前写操作命令的执行；但会给下一条命令带来阻塞风险；</li>
+</ul>
+<p>因为将命令写入到日志的这个操作也是在主进程完成的（执行命令也是在主进程），也就是说这两个操作是同步的。</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_aof%E6%93%8D%E4%BD%9C.png" alt="redis_aof操作"></p>
+<p>如果服务器磁盘I&#x2F;O压力过大，会导致写入速度很慢，从而导致阻塞下条命令执行；</p>
+<h4 id="三种写策略"><a href="#三种写策略" class="headerlink" title="三种写策略"></a>三种写策略</h4><p>Redis 写入 AOF 日志的过程，如下图：</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_AOF%E7%9A%84%E5%86%99%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B.png" alt="redis_AOF的写操作流程"></p>
+<ol>
+<li>Redis 执行完写操作命令后，会将命令追加到 <code>server.aof_buf</code> 缓冲区；</li>
+<li>然后通过 write() 系统调用，将 aof_buf 缓冲区的数据写入到 AOF 文件，此时数据并没有写入到硬盘，而是拷贝到了内核缓冲区 page cache，等待内核将数据写入硬盘；</li>
+<li>具体内核缓冲区的数据什么时候写入到硬盘，由内核决定。</li>
+</ol>
+<p>Redis 提供了 <strong>3 种写回硬盘的策略</strong>，控制的就是上面说的第三步的过程。</p>
+<p>在redis.conf配置文件中 <code>appendfsync</code>配置项有三个可选参数：</p>
+<ul>
+<li>always，每次执行写操作命令，同步将AOF日志数据写回硬盘；</li>
+<li>Everysec， 先将命令写入到AOF文件的内核缓冲区，每隔一秒将缓冲区的内容写入到硬盘；</li>
+<li>NO， 由操作系统控制写入磁盘的时机，该参数性能较好；</li>
+</ul>
+<p>以上三个配置项的使用场景：</p>
+<ul>
+<li><p>Always 策略的话，可以<strong>最大程度保证数据不丢失</strong>，但是由于它每执行一条写操作命令就同步将 AOF 内容写回硬盘，所以是不可避免会影响主进程的性能；</p>
+</li>
+<li><p>No 策略的话，是交由操作系统来决定何时将 AOF 日志内容写回硬盘，相比于 Always <strong>策略性能较好</strong>，但是操作系统写回硬盘的时机是不可预知的，如果 AOF 日志内容没有写回硬盘，一旦服务器宕机，就会丢失不定数量的数据。</p>
+</li>
+<li><p>Everysec 策略的话，是<strong>折中的一种方式</strong>，避免了 Always 策略的性能开销，也比 No 策略更能避免数据丢失，当然如果上一秒的写操作命令日志没有写回到硬盘，发生了宕机，这一秒内的数据自然也会丢失。</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/appendfsync%E7%9A%84%E4%B8%89%E7%A7%8D%E9%85%8D%E7%BD%AE.png"></p>
+</li>
+</ul>
+<h5 id="AOF-重写机制"><a href="#AOF-重写机制" class="headerlink" title="AOF 重写机制"></a>AOF 重写机制</h5><p>AOF 日志是一个文件，随着执行的写操作命令越来越多，文件的大小会越来越大。</p>
+<p>所以Redis提供 <code>AOF</code>重写机制，当AOF文件大小超过指定阈值时，Redis就会启用AOF重写机制，来压缩AOF文件；</p>
+<p>AOF重写机制就是在重写时，读取当前数据库中的所有键值对，然后每一个键值对用一个命令记录到 <strong>新的AOF文件</strong>，然后用新的AOF文件替换旧AOF文件</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/AOF%E9%87%8D%E5%86%99%E6%9C%BA%E5%88%B6.png" alt="AOF重写机制"></p>
+<h5 id="AOF后台重写"><a href="#AOF后台重写" class="headerlink" title="AOF后台重写"></a>AOF后台重写</h5><p>redis的重写过程由后台子进程<code>bgrewriteaof</code> （bg后台）完成：</p>
+<ul>
+<li>子进程进行 AOF 重写期间，主进程可以继续处理命令请求，从而避免阻塞主进程；</li>
+<li>子进程带有主进程的数据副本（<em>数据副本怎么产生的后面会说</em>），这里使用子进程而不是线程，因为如果是使用线程，多线程之间会共享内存，那么在修改共享内存数据的时候，需要通过加锁来保证数据的安全，而这样就会降低性能。而使用子进程，创建子进程时，父子进程是共享内存数据的，不过这个共享的内存只能以只读的方式，而当父子进程任意一方修改了该共享内存，就会发生「写时复制」，于是父子进程就有了独立的数据副本，就不用加锁来保证数据安全。</li>
+</ul>
+<p>linux系统中，并不会把父进程的内存拷贝一份给子进程，而是在父子进程中任意一方进行内存页修改时，才会进行复制；</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_bgrewirteaof_%E5%86%99%E6%97%B6%E5%A4%8D%E5%88%B6.png" alt="redis_bgrewirteaof_写时复制"></p>
+<h5 id="RDB-和-AOF-合体"><a href="#RDB-和-AOF-合体" class="headerlink" title="RDB 和 AOF 合体"></a>RDB 和 AOF 合体</h5><p>介绍：redis4.0 提出</p>
+<p>如果想要开启混合持久化功能，可以在 Redis 配置文件将下面这个配置项设置成 yes：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aof-use-rdb-preamble yes</span><br></pre></td></tr></table></figure>
+
+<h3 id="Redis过期删除策略和内存淘汰策略"><a href="#Redis过期删除策略和内存淘汰策略" class="headerlink" title="Redis过期删除策略和内存淘汰策略"></a>Redis过期删除策略和内存淘汰策略</h3><h4 id="过期删除策略有哪些？"><a href="#过期删除策略有哪些？" class="headerlink" title="过期删除策略有哪些？"></a>过期删除策略有哪些？</h4><p>在说 Redis 过期删除策略之前，先跟大家介绍下，常见的三种过期删除策略：</p>
+<ul>
+<li>定时删除；<strong>在设置 key 的过期时间时，同时创建一个定时事件，当时间到达时，由事件处理器自动执行 key 的删除操作。</strong></li>
+<li>惰性删除；<strong>不主动删除过期键，每次从数据库访问 key 时，都检测 key 是否过期，如果过期则删除该 key。</strong></li>
+<li>定期删除；<strong>每隔一段时间「随机」从数据库中取出一定数量的 key 进行检查，并删除其中的过期key。</strong></li>
+</ul>
+<p>Redis使用的是： <strong>「惰性删除+定期删除」这两种策略配和使用</strong></p>
+<p>​	</p>
+<h3 id="内存淘汰策略"><a href="#内存淘汰策略" class="headerlink" title="内存淘汰策略"></a>内存淘汰策略</h3><p>前面说的过期删除策略，是删除已过期的 key，而当 Redis 的运行内存已经超过 Redis 设置的最大内存之后，则会使用内存淘汰策略删除符合条件的 key，以此来保障 Redis 高效的运行</p>
+<h4 id="Redis-内存淘汰策略有哪些？"><a href="#Redis-内存淘汰策略有哪些？" class="headerlink" title="Redis 内存淘汰策略有哪些？"></a>Redis 内存淘汰策略有哪些？</h4><p>Redis 内存淘汰策略共有八种，这八种策略大体分为「不进行数据淘汰」和「进行数据淘汰」两类策略。</p>
+<p><em>1、不进行数据淘汰的策略</em></p>
+<p><strong>noeviction</strong>（Redis3.0之后，默认的内存淘汰策略） ：它表示当运行内存超过最大设置内存时，不淘汰任何数据，这时如果有新的数据写入，会报错通知禁止写入，不淘汰任何数据，但是如果没用数据写入的话，只是单纯的查询或者删除操作的话，还是可以正常工作。</p>
+<p><em>2、进行数据淘汰的策略</em></p>
+<p>针对「进行数据淘汰」这一类策略，又可以细分为「在设置了过期时间的数据中进行淘汰」和「在所有数据范围内进行淘汰」这两类策略。</p>
+<p>在设置了过期时间的数据中进行淘汰：</p>
+<ul>
+<li><strong>volatile-random</strong>：随机淘汰设置了过期时间的任意键值；</li>
+<li><strong>volatile-ttl</strong>：优先淘汰更早过期的键值。</li>
+<li><strong>volatile-lru</strong>（Redis3.0 之前，默认的内存淘汰策略）：淘汰所有设置了过期时间的键值中，最久未使用的键值；</li>
+<li><strong>volatile-lfu</strong>（Redis 4.0 后新增的内存淘汰策略）：淘汰所有设置了过期时间的键值中，最少使用的键值；</li>
+</ul>
+<p>在所有数据范围内进行淘汰：</p>
+<ul>
+<li><strong>allkeys-random</strong>：随机淘汰任意键值;</li>
+<li><strong>allkeys-lru</strong>：淘汰整个键值中最久未使用的键值；</li>
+<li><strong>llkeys-lfu</strong>（Redis 4.0 后新增的内存淘汰策略）：淘汰整个键值中最少使用的键值。</li>
+</ul>
+<h3 id="集群高可用"><a href="#集群高可用" class="headerlink" title="集群高可用"></a>集群高可用</h3><h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><ul>
+<li>大量key同时过期</li>
+<li>Redis宕机</li>
+</ul>
+<p>应对方法：</p>
+<ul>
+<li>均匀设置过期时间，使用随机数设置过期时间</li>
+<li>业务对象不再更新缓存，缓存也不设置有效期；将更新缓存的工作交给后台线程；</li>
+<li>互斥锁，当业务线程在处理用户请求时，<strong>如果发现访问的数据不在 Redis 里，就加个互斥锁，保证同一时间内只有一个请求来构建缓存</strong>（从数据库读取数据，再将数据更新到 Redis 里），当缓存构建完成后，再释放锁。</li>
+</ul>
+<h4 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h4><ul>
+<li>热点key过期</li>
+</ul>
+<p>应对方法与缓存雪崩一致</p>
+<h4 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h4><p>缓存中没有该数据；</p>
+<p>应对缓存穿透的方案，常见的方案有三种。</p>
+<ul>
+<li>第一种方案，非法请求的限制；</li>
+<li>第二种方案，缓存空值或者默认值；</li>
+<li>第三种方案，使用布隆过滤器快速判断数据是否存在，避免通过查询数据库来判断数据是否存在</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_%E7%BC%93%E5%AD%98.png" alt="redis_缓存"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/24/%E9%9D%A2%E8%AF%95&%E5%B7%A5%E4%BD%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1725,93 +2125,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/22/Docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/22/Docker/" class="post-title-link" itemprop="url">Docker</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-08-22 11:32:01" itemprop="dateCreated datePublished" datetime="2023-08-22T11:32:01+08:00">2023-08-22</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Docker-常用命令"><a href="#Docker-常用命令" class="headerlink" title="Docker 常用命令"></a>Docker 常用命令</h1><p> 拉取镜像</p>
-<ul>
-<li>docker pull mysql:tag</li>
-</ul>
-<p>查看镜像</p>
-<ul>
-<li>docker ps</li>
-</ul>
-<p>运行镜像</p>
-<ul>
-<li>docker run -d —name <xxx> -p <localPort>:<dockerPort>  dockerName:tag<ul>
-<li><ul>
-<li>it 交互式运行</li>
-</ul>
-</li>
-<li><ul>
-<li>d 后台运行</li>
-</ul>
-</li>
-<li><ul>
-<li>v 挂载数据卷</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>进入已运行的容器</p>
-<ul>
-<li>docker exec -it <CONTAINER> bash</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1881,7 +2194,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
