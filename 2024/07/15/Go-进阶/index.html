@@ -20,20 +20,21 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Go GC内存管理的组件  上图中用户程序（Mutator）通过内存分配器（Allocator）在堆（heap）上分配空间，Go 的垃圾回收器（Collector）回收堆上的空间； 触发GC的条件：  阈值：默认内存扩大一倍时，主动触发GC； 定期：默认2min触发一次gc 手动：runtime.gc  三色标记-垃圾回收三色标记垃圾收集器的执行过程如下：  扫描所有存在外部引用的对象，将其标记成">
+  <meta name="description" content="Go 进阶Go GC内存管理的组件  上图中用户程序（Mutator）通过内存分配器（Allocator）在堆（heap）上分配空间，Go 的垃圾回收器（Collector）回收堆上的空间； 触发GC的条件：  阈值：默认内存扩大一倍时，主动触发GC； 定期：默认2min触发一次gc 手动：runtime.gc  三色标记-垃圾回收三色标记垃圾收集器的执行过程如下：  扫描所有存在外部引用的对象，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go 进阶">
 <meta property="og:url" content="http://example.com/2024/07/15/Go-%E8%BF%9B%E9%98%B6/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Go GC内存管理的组件  上图中用户程序（Mutator）通过内存分配器（Allocator）在堆（heap）上分配空间，Go 的垃圾回收器（Collector）回收堆上的空间； 触发GC的条件：  阈值：默认内存扩大一倍时，主动触发GC； 定期：默认2min触发一次gc 手动：runtime.gc  三色标记-垃圾回收三色标记垃圾收集器的执行过程如下：  扫描所有存在外部引用的对象，将其标记成">
+<meta property="og:description" content="Go 进阶Go GC内存管理的组件  上图中用户程序（Mutator）通过内存分配器（Allocator）在堆（heap）上分配空间，Go 的垃圾回收器（Collector）回收堆上的空间； 触发GC的条件：  阈值：默认内存扩大一倍时，主动触发GC； 定期：默认2min触发一次gc 手动：runtime.gc  三色标记-垃圾回收三色标记垃圾收集器的执行过程如下：  扫描所有存在外部引用的对象，">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/mutator-allocator-collector.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/GMP%E6%A8%A1%E5%9E%8B.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/go_mem_base.jpeg">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/Context%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/context%E5%AD%90%E8%8A%82%E7%82%B9%E5%8F%96%E6%B6%88.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%88%87%E7%89%87%E7%BB%93%E6%9E%84.png">
 <meta property="article:published_time" content="2024-07-15T15:45:41.312Z">
-<meta property="article:modified_time" content="2024-07-21T16:04:28.061Z">
+<meta property="article:modified_time" content="2024-08-02T04:11:10.283Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/mutator-allocator-collector.png">
@@ -186,7 +187,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-22 00:04:28" itemprop="dateModified" datetime="2024-07-22T00:04:28+08:00">2024-07-22</time>
+                <time title="修改时间：2024-08-02 12:11:10" itemprop="dateModified" datetime="2024-08-02T12:11:10+08:00">2024-08-02</time>
               </span>
 
           
@@ -200,7 +201,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Go-GC"><a href="#Go-GC" class="headerlink" title="Go GC"></a>Go GC</h1><p><strong>内存管理的组件</strong></p>
+        <h1 id="Go-进阶"><a href="#Go-进阶" class="headerlink" title="Go 进阶"></a>Go 进阶</h1><h2 id="Go-GC"><a href="#Go-GC" class="headerlink" title="Go GC"></a>Go GC</h2><p><strong>内存管理的组件</strong></p>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/mutator-allocator-collector.png" alt="mutator-allocator-collector"></p>
 <p>上图中用户程序（Mutator）通过内存分配器（Allocator）在堆（heap）上分配空间，Go 的垃圾回收器（Collector）回收堆上的空间；</p>
 <p>触发GC的条件：</p>
@@ -212,7 +213,7 @@
 <h2 id="三色标记-垃圾回收"><a href="#三色标记-垃圾回收" class="headerlink" title="三色标记-垃圾回收"></a>三色标记-垃圾回收</h2><p>三色标记垃圾收集器的执行过程如下：</p>
 <ul>
 <li>扫描所有存在外部引用的对象，将其标记成灰色；</li>
-<li>将灰色集合中标记成黑色</li>
+<li>将集合中标记成黑色</li>
 <li>将黑色对象指向的对象标记成灰色</li>
 <li>重复上面两个步骤；</li>
 </ul>
@@ -234,11 +235,29 @@
 <p>GMP调度流程大致如下：</p>
 <ul>
 <li>线程M想运行任务就需得获取 P，即与P关联。</li>
-<li>然从 P 的本地队列(LRQ)获取 G</li>
+<li>然后从 P 的本地队列(LRQ)获取 G</li>
 <li>若LRQ中没有可运行的G，M 会尝试从全局队列(GRQ)拿一批G放到P的本地队列，</li>
 <li>若全局队列也未找到可运行的G时候，M会随机从其他 P 的本地队列偷一半放到自己 P 的本地队列。</li>
 <li>拿到可运行的G之后，M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。</li>
 </ul>
+<h2 id="Go内存分配"><a href="#Go内存分配" class="headerlink" title="Go内存分配"></a>Go内存分配</h2><h3 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h3><p>Go在程序启动的时候会首先申请一块内存区（虚拟的地址空间），切成小块之后进行管理；分别是spans，bitmap, arena(堆空间)</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/go_mem_base.jpeg" alt="go_mem_base"></p>
+<p><code>arena区域</code>就是我们所谓的堆区，Go动态分配的内存都是在这个区域</p>
+<p><code>bitmap区域</code>标识<code>arena</code>区域哪些地址保存了对象，并且用<code>4bit</code>标志位表示对象是否包含指针、<code>GC</code>标记信息</p>
+<p><code>spans区域</code>存放<code>mspan</code>（也就是一些<code>arena</code>分割的页组合起来的内存管理基本单元，后文会再讲）的指针</p>
+<h3 id="内存管理组件"><a href="#内存管理组件" class="headerlink" title="内存管理组件"></a>内存管理组件</h3><h4 id="mcache"><a href="#mcache" class="headerlink" title="mcache"></a>mcache</h4><p>​	每一个工作线程都会绑定一个mcache，本地缓存可用的mspan资源，这样可以直接给goroutine用，因为本地缓存的都是不同的mspan因此不同goroutine之间不存在竞争问题，所以不需要消耗锁资源；</p>
+<h3 id="内存分配的基本原理"><a href="#内存分配的基本原理" class="headerlink" title="内存分配的基本原理"></a>内存分配的基本原理</h3><p>在计算机科学中，内存分配是指为程序中的变量和数据结构分配存储空间的过程。在 Golang 中，内存分配主要由 Go 运行时系统（runtime）负责，主要包括以下两个方面：</p>
+<ul>
+<li>堆内存分配：堆内存是用于动态分配的内存区域，主要用于存储程序运行过程中创建的对象和数据结构。通过 new、make 等函数或者使用指针进行内存分配时，都会在堆上分配内存。</li>
+<li>栈内存分配：栈内存是用于存放函数调用时的局部变量和返回地址等信息的内存区域。基本类型（如整型、浮点型、布尔型等）和小对象（通常小于 64 字节）的内存分配通常发生在栈上。</li>
+</ul>
+<p>Go 使用了一个称为“tcmalloc”（thread-caching malloc）的内存分配器，最初由 Google 开发。tcmalloc 的设计目标是减少全局锁的竞争，提高多线程程序的性能。Go 的内存分配器是基于 tcmalloc 概念的一个实现，有几个关键的组成部分：</p>
+<ul>
+<li>M: 代表操作系统线程（machine）。</li>
+<li>P: 代表处理器（processor），管理着一组本地缓存。</li>
+<li>G: 代表 goroutine，是 Go 程序执行的最小单位。</li>
+</ul>
+<p>每个 P 都有自己的内存缓存（mcache），用于小对象的快速分配。当 mcache 用完时，P 会从中心缓存（mcentral）获取内存。如果 mcentral 也不足，内存分配器会向操作系统请求更多内存。</p>
 <h2 id="CSP模型"><a href="#CSP模型" class="headerlink" title="CSP模型"></a>CSP模型</h2><p>介绍：CSP用于描述两个独立的并发实体之间通过共享的channel进行通信的并发模型；</p>
 <h3 id="CSP模型核心概念"><a href="#CSP模型核心概念" class="headerlink" title="CSP模型核心概念"></a>CSP模型核心概念</h3><h4 id="Goroutines"><a href="#Goroutines" class="headerlink" title="Goroutines"></a>Goroutines</h4><p>Goroutine是Go轻量级线程的实现，启动成本极低，使得并发成为Go程序设计的自然组成部分。通过在函数调用前添加<code>go</code>关键字，即可轻松创建一个新的goroutine。</p>
 <h4 id="Channels"><a href="#Channels" class="headerlink" title="Channels"></a>Channels</h4><p>Channel是CSP模型中的核心组件，它提供了一种安全的通信机制，使得goroutines之间能够通过发送和接收数据进行通信。Channel可以是带缓冲或无缓冲的，定义时通过<code>make(chan Type, [buffer])</code>指定。</p>
@@ -437,47 +456,12 @@
 <h2 id="Map数据结构，并发安全"><a href="#Map数据结构，并发安全" class="headerlink" title="Map数据结构，并发安全"></a>Map数据结构，并发安全</h2><h3 id="Map的内部源码"><a href="#Map的内部源码" class="headerlink" title="Map的内部源码"></a>Map的内部源码</h3><ul>
 <li>在Go中map是一个指针，指向的是<code>hmap</code>的结构体</li>
 </ul>
-<pre><code class="go">// A header for a Go map.
-type hmap struct &#123;
-    // Make sure this stays in sync with the compiler&#39;s definition.
-    count     int // # live cells == size of map.  Must be first (used by len() builtin)
-    flags     uint8
-    B         uint8  // log_2 of # of buckets (can hold up to loadFactor * 2^B items)
-    noverflow uint16 // approximate number of overflow buckets; see incrnoverflow for details
-    hash0     uint32 // hash seed
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// Make sure this stays in sync with the compiler&#x27;s definition.</span></span><br><span class="line">	count     <span class="type">int</span> <span class="comment">// # live cells == size of map.  Must be first (used by len() builtin)</span></span><br><span class="line">	flags     <span class="type">uint8</span></span><br><span class="line">	B         <span class="type">uint8</span>  <span class="comment">// log_2 of # of buckets (can hold up to loadFactor * 2^B items)</span></span><br><span class="line">	noverflow <span class="type">uint16</span> <span class="comment">// approximate number of overflow buckets; see incrnoverflow for details</span></span><br><span class="line">	hash0     <span class="type">uint32</span> <span class="comment">// hash seed</span></span><br><span class="line"></span><br><span class="line">	buckets    unsafe.Pointer <span class="comment">// array of 2^B Buckets. may be nil if count==0.</span></span><br><span class="line">	oldbuckets unsafe.Pointer <span class="comment">// previous bucket array of half the size, non-nil only when growing</span></span><br><span class="line">	nevacuate  <span class="type">uintptr</span>        <span class="comment">// progress counter for evacuation (buckets less than this have been evacuated)</span></span><br><span class="line"></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A bucket for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    tophash [bucketCnt]<span class="type">uint8</span>        </span><br><span class="line">    <span class="comment">// len为8的数组</span></span><br><span class="line">    <span class="comment">// 用来快速定位key是否在这个bmap中</span></span><br><span class="line">    <span class="comment">// 桶的槽位数组，一个桶最多8个槽位，如果key所在的槽位在tophash中，则代表该key在这个桶中</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//底层定义的常量 </span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    bucketCntBits = <span class="number">3</span></span><br><span class="line">    bucketCnt     = <span class="number">1</span> &lt;&lt; bucketCntBits</span><br><span class="line">    <span class="comment">// 一个桶最多8个位置</span></span><br><span class="line">）</span><br><span class="line"></span><br><span class="line">但这只是表面(src/runtime/hashmap.<span class="keyword">go</span>)的结构，编译期间会给它加料，动态地创建一个新的结构：</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    </span><br><span class="line">  tophash [bucketCnt]<span class="type">uint8</span></span><br><span class="line">    </span><br><span class="line">  topbits  [<span class="number">8</span>]<span class="type">uint8</span></span><br><span class="line">  keys     [<span class="number">8</span>]keytype</span><br><span class="line">  values   [<span class="number">8</span>]valuetype</span><br><span class="line">  pad      <span class="type">uintptr</span></span><br><span class="line">  overflow <span class="type">uintptr</span></span><br><span class="line">  <span class="comment">// 溢出桶</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-    buckets    unsafe.Pointer // array of 2^B Buckets. may be nil if count==0.
-    oldbuckets unsafe.Pointer // previous bucket array of half the size, non-nil only when growing
-    nevacuate  uintptr        // progress counter for evacuation (buckets less than this have been evacuated)
 
-    extra *mapextra // optional fields
-&#125;
 
-// A bucket for a Go map.
-type bmap struct &#123;
-    tophash [bucketCnt]uint8        
-    // len为8的数组
-    // 用来快速定位key是否在这个bmap中
-    // 桶的槽位数组，一个桶最多8个槽位，如果key所在的槽位在tophash中，则代表该key在这个桶中
-&#125;
-//底层定义的常量 
-const (
-    bucketCntBits = 3
-    bucketCnt     = 1 &lt;&lt; bucketCntBits
-    // 一个桶最多8个位置
-）
-
-但这只是表面(src/runtime/hashmap.go)的结构，编译期间会给它加料，动态地创建一个新的结构：
-
-type bmap struct &#123;
-  topbits  [8]uint8
-  keys     [8]keytype
-  values   [8]valuetype
-  pad      uintptr
-  overflow uintptr
-  // 溢出桶
-&#125;
-</code></pre>
+<h3 id="Map的rehash"><a href="#Map的rehash" class="headerlink" title="Map的rehash"></a>Map的rehash</h3><h4 id="hash冲突解决方案"><a href="#hash冲突解决方案" class="headerlink" title="hash冲突解决方案"></a>hash冲突解决方案</h4><p>开放寻址法</p>
+<p>拉链法</p>
 
     </div>
 
@@ -558,7 +542,7 @@ type bmap struct &#123;
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-GC"><span class="nav-number">1.</span> <span class="nav-text">Go GC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">1.1.</span> <span class="nav-text">三色标记-垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#STW"><span class="nav-number">1.1.1.</span> <span class="nav-text">STW</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C"><span class="nav-number">1.1.2.</span> <span class="nav-text">混合写屏障</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-GMP"><span class="nav-number">1.2.</span> <span class="nav-text">Go GMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">CSP模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.1.</span> <span class="nav-text">CSP模型核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Goroutines"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">Goroutines</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Channels"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">Channels</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%81%BF%E5%85%8D%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.2.</span> <span class="nav-text">常见问题与避免方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">问题一：数据竞争</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BA%8C%EF%BC%9A%E6%AD%BB%E9%94%81"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">问题二：死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%89%EF%BC%9Agoroutine%E6%B3%84%E6%BC%8F"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">问题三：goroutine泄漏</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chan-%E5%8E%9F%E7%90%86"><span class="nav-number">1.4.</span> <span class="nav-text">chan 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Chan%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.1.</span> <span class="nav-text">Chan数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#chan%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">chan的内存泄漏问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chan-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="nav-number">1.4.2.</span> <span class="nav-text">chan 使用规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#context-%E7%BB%93%E6%9E%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">context 结构原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.5.1.</span> <span class="nav-text">Context 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#canceler%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.5.2.</span> <span class="nav-text">canceler接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.5.3.</span> <span class="nav-text">Context 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#EmptyCtx"><span class="nav-number">1.5.3.1.</span> <span class="nav-text">EmptyCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cancelCtx"><span class="nav-number">1.5.3.2.</span> <span class="nav-text">cancelCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ValueContext"><span class="nav-number">1.5.3.3.</span> <span class="nav-text">ValueContext</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.4.</span> <span class="nav-text">通用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WithCancel"><span class="nav-number">1.5.4.1.</span> <span class="nav-text">WithCancel()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#propagateCancel-%E5%88%86%E6%9E%90"><span class="nav-number">1.5.4.2.</span> <span class="nav-text">propagateCancel 分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#value-%E5%88%86%E6%9E%90%EF%BC%9B"><span class="nav-number">1.5.4.3.</span> <span class="nav-text">value() 分析；</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">1.6.</span> <span class="nav-text">切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.6.1.</span> <span class="nav-text">切片与数组的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9"><span class="nav-number">1.6.2.</span> <span class="nav-text">切片的动态扩容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E9%9D%9E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">1.6.3.</span> <span class="nav-text">切片非线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84Append%E6%93%8D%E4%BD%9C"><span class="nav-number">1.6.4.</span> <span class="nav-text">切片的Append操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%8C%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8"><span class="nav-number">1.7.</span> <span class="nav-text">Map数据结构，并发安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84%E5%86%85%E9%83%A8%E6%BA%90%E7%A0%81"><span class="nav-number">1.7.1.</span> <span class="nav-text">Map的内部源码</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-%E8%BF%9B%E9%98%B6"><span class="nav-number">1.</span> <span class="nav-text">Go 进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-GC"><span class="nav-number">1.1.</span> <span class="nav-text">Go GC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">1.2.</span> <span class="nav-text">三色标记-垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#STW"><span class="nav-number">1.2.1.</span> <span class="nav-text">STW</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C"><span class="nav-number">1.2.2.</span> <span class="nav-text">混合写屏障</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-GMP"><span class="nav-number">1.3.</span> <span class="nav-text">Go GMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">1.4.</span> <span class="nav-text">Go内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.4.1.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%BB%84%E4%BB%B6"><span class="nav-number">1.4.2.</span> <span class="nav-text">内存管理组件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mcache"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">mcache</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.4.3.</span> <span class="nav-text">内存分配的基本原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">CSP模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.5.1.</span> <span class="nav-text">CSP模型核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Goroutines"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">Goroutines</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Channels"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">Channels</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%81%BF%E5%85%8D%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.2.</span> <span class="nav-text">常见问题与避免方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">问题一：数据竞争</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BA%8C%EF%BC%9A%E6%AD%BB%E9%94%81"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">问题二：死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%89%EF%BC%9Agoroutine%E6%B3%84%E6%BC%8F"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">问题三：goroutine泄漏</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chan-%E5%8E%9F%E7%90%86"><span class="nav-number">1.6.</span> <span class="nav-text">chan 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Chan%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.6.1.</span> <span class="nav-text">Chan数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#chan%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E9%97%AE%E9%A2%98"><span class="nav-number">1.6.1.1.</span> <span class="nav-text">chan的内存泄漏问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chan-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="nav-number">1.6.2.</span> <span class="nav-text">chan 使用规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#context-%E7%BB%93%E6%9E%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.7.</span> <span class="nav-text">context 结构原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.7.1.</span> <span class="nav-text">Context 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#canceler%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.7.2.</span> <span class="nav-text">canceler接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.7.3.</span> <span class="nav-text">Context 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#EmptyCtx"><span class="nav-number">1.7.3.1.</span> <span class="nav-text">EmptyCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cancelCtx"><span class="nav-number">1.7.3.2.</span> <span class="nav-text">cancelCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ValueContext"><span class="nav-number">1.7.3.3.</span> <span class="nav-text">ValueContext</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.7.4.</span> <span class="nav-text">通用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WithCancel"><span class="nav-number">1.7.4.1.</span> <span class="nav-text">WithCancel()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#propagateCancel-%E5%88%86%E6%9E%90"><span class="nav-number">1.7.4.2.</span> <span class="nav-text">propagateCancel 分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#value-%E5%88%86%E6%9E%90%EF%BC%9B"><span class="nav-number">1.7.4.3.</span> <span class="nav-text">value() 分析；</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">1.8.</span> <span class="nav-text">切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.8.1.</span> <span class="nav-text">切片与数组的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9"><span class="nav-number">1.8.2.</span> <span class="nav-text">切片的动态扩容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E9%9D%9E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">1.8.3.</span> <span class="nav-text">切片非线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84Append%E6%93%8D%E4%BD%9C"><span class="nav-number">1.8.4.</span> <span class="nav-text">切片的Append操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%8C%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8"><span class="nav-number">1.9.</span> <span class="nav-text">Map数据结构，并发安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84%E5%86%85%E9%83%A8%E6%BA%90%E7%A0%81"><span class="nav-number">1.9.1.</span> <span class="nav-text">Map的内部源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84rehash"><span class="nav-number">1.9.2.</span> <span class="nav-text">Map的rehash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hash%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.9.2.1.</span> <span class="nav-text">hash冲突解决方案</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -572,7 +556,7 @@ type bmap struct &#123;
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -600,7 +584,7 @@ type bmap struct &#123;
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

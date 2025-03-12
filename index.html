@@ -145,6 +145,174 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/24/%E9%9D%A2%E8%AF%95&%E5%B7%A5%E4%BD%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/07/24/%E9%9D%A2%E8%AF%95&%E5%B7%A5%E4%BD%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">面试&工作基础知识</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-24 00:02:11" itemprop="dateCreated datePublished" datetime="2024-07-24T00:02:11+08:00">2024-07-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-07-29 10:36:48" itemprop="dateModified" datetime="2024-07-29T10:36:48+08:00">2024-07-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h1><h2 id="线程与协程之间的区别"><a href="#线程与协程之间的区别" class="headerlink" title="线程与协程之间的区别"></a>线程与协程之间的区别</h2><p>定义：	</p>
+<ul>
+<li>进程：是具有独立功能的程序，系统资源分配和独立运行的最小单元；</li>
+<li>线程：线程是进程一个执行单元，是任务调度与执行的最小单元；</li>
+<li>协程：轻量级别的线程，是一种用户态的线程；</li>
+</ul>
+<p>区别：</p>
+<ul>
+<li>线程是任务调度的基本单元，进程是资源分配的最小单元</li>
+<li>包含关系：一个进程可以有多个线程，但至少有一个线程。</li>
+<li>资源关系：同类的线程共享线程的堆和方法区资源，但每个线程有自己的程序计数器，虚拟机栈，本地方法栈；进程之间的地址空间和资源是独立的；</li>
+<li>影响关系：进程之间是受保护的，一个进程崩溃不会影响另外一个进程；线程崩溃会导致进程也崩溃</li>
+</ul>
+<h2 id="协程为什么比线程快"><a href="#协程为什么比线程快" class="headerlink" title="协程为什么比线程快"></a>协程为什么比线程快</h2><p>1、<strong>协程切换比线程的开销更小</strong>: 	<strong>线程之间的切换涉及到内核态和用户态的转换</strong>，这就需要消耗大量CPU资源，而协程就是在用户态上进行的；</p>
+<p>2、<strong>执行效率更高</strong>:    由于协程是用户态下的执行单元，它的<strong>执行不会受到操作系统的调度影响</strong>。这意味着，当一个协程在执行一个耗时操作（如I&#x2F;O操作）时，它不会被操作系统打断，而是可以充分利用CPU资源进行计算，从而提高了执行效率。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/23/MySql%E5%8D%83%E4%B8%87%E7%BA%A7%E5%88%AB%E6%95%B0%E6%8D%AE%E6%96%B0%E5%A2%9E%E5%AD%97%E6%AE%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/07/23/MySql%E5%8D%83%E4%B8%87%E7%BA%A7%E5%88%AB%E6%95%B0%E6%8D%AE%E6%96%B0%E5%A2%9E%E5%AD%97%E6%AE%B5/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-07-23 23:10:51 / 修改时间：23:25:17" itemprop="dateCreated datePublished" datetime="2024-07-23T23:10:51+08:00">2024-07-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="MySql-千万级别数据新增字段"><a href="#MySql-千万级别数据新增字段" class="headerlink" title="MySql 千万级别数据新增字段"></a>MySql 千万级别数据新增字段</h1><h2 id="MySQL-大表数据添加新字段"><a href="#MySQL-大表数据添加新字段" class="headerlink" title="MySQL 大表数据添加新字段"></a><strong>MySQL 大表数据添加新字段</strong></h2><p>​	直接添加会导致<code>mysql</code>卡死,同时命令执行超时；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table product_table add column column_name varchar(32) default &quot;&quot; </span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>一、扩展新表</p>
+<h5 id="扩展新表方案"><a href="#扩展新表方案" class="headerlink" title="扩展新表方案"></a><strong>扩展新表方案</strong></h5><blockquote>
+<p>创建一个新表<code>user_ext(id,user_id,flag)</code>,将<code>user</code>表的id导入<code>user_ext</code>,然后<code>user</code>表和<code>user_ext</code>通过关联就可以间接实现我们的需求。</p>
+</blockquote>
+<p>二、新建一张表</p>
+<blockquote>
+<p>创建一个临时的新表，首先复制旧表的结构（包含索引）</p>
+</blockquote>
+<blockquote>
+<p>给新表加上新增的字段</p>
+</blockquote>
+<blockquote>
+<p>把旧表的数据复制过来</p>
+</blockquote>
+<blockquote>
+<p>删除旧表，重命名新表的名字为旧表的名字</p>
+</blockquote>
+<p>*建议在脱机情况下操作，防止数据不完整；</p>
+<p>三、升级Mysql版本到8.0以上</p>
+<p>总结：</p>
+<ul>
+<li>若是在线上添加则可以进行如下方案:<ul>
+<li>数据不大：直接天机</li>
+<li>数据大：使用pt_osc添加（percona tools 专用与线上数据结构定义的修改工具）</li>
+<li>数据大，且是热表：先在从库添加 再进行主从切换</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/16/algorithm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -176,7 +344,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-21 15:53:44" itemprop="dateModified" datetime="2024-07-21T15:53:44+08:00">2024-07-21</time>
+                <time title="修改时间：2024-08-02 09:12:01" itemprop="dateModified" datetime="2024-08-02T09:12:01+08:00">2024-08-02</time>
               </span>
 
           
@@ -197,13 +365,17 @@
 
 
 
-<h2 id="全排列算法-回溯思想"><a href="#全排列算法-回溯思想" class="headerlink" title="全排列算法-回溯思想"></a>全排列算法-回溯思想</h2><p>问题：列出一个数组中元素的所有排列组合；eg: []int{1,2,3}</p>
+<h2 id="回溯思想"><a href="#回溯思想" class="headerlink" title="回溯思想"></a>回溯思想</h2><h3 id="全排列算法"><a href="#全排列算法" class="headerlink" title="全排列算法"></a>全排列算法</h3><p>问题：列出一个数组中元素的所有排列组合；eg: []int{1,2,3}</p>
 <ul>
 <li>[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]</li>
 </ul>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%85%A8%E6%8E%92%E5%88%97-%E5%9B%9E%E6%BA%AF%E6%80%9D%E6%83%B3.png" alt="全排列-回溯思想"></p>
 <p>示例代码：全排列</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	nums := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">	res, path = <span class="built_in">make</span>([][]<span class="type">int</span>, <span class="number">0</span>), <span class="built_in">make</span>([]<span class="type">int</span>, <span class="number">0</span>, <span class="built_in">len</span>(nums))</span><br><span class="line">	st = <span class="built_in">make</span>([]<span class="type">bool</span>, <span class="built_in">len</span>(nums))</span><br><span class="line">	</span><br><span class="line">	Dfs(nums, <span class="number">0</span>)</span><br><span class="line">	fmt.Println(res)</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Dfs</span><span class="params">(nums []<span class="type">int</span>, cur <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;start&quot;</span>)</span><br><span class="line">	<span class="comment">// 退出条件 当遍历位置为最后一个索引时</span></span><br><span class="line">	<span class="keyword">if</span> cur == <span class="built_in">len</span>(nums) &#123;</span><br><span class="line">		tmp := <span class="built_in">make</span>([]<span class="type">int</span>, <span class="built_in">len</span>(nums))</span><br><span class="line">		<span class="built_in">copy</span>(tmp, path)</span><br><span class="line">		res = <span class="built_in">append</span>(res, path)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(nums); i++ &#123;</span><br><span class="line">		<span class="keyword">if</span> !st[i] &#123;</span><br><span class="line">			<span class="comment">//fmt.Println(&quot;i:&quot;, i)</span></span><br><span class="line">			fmt.Println(path)</span><br><span class="line">			path = <span class="built_in">append</span>(path, nums[i])</span><br><span class="line">            <span class="comment">// 标记当前位置已经被占用</span></span><br><span class="line">			st[i] = <span class="literal">true</span></span><br><span class="line">            <span class="comment">// 递归下一个位置</span></span><br><span class="line">			Dfs(nums, cur+<span class="number">1</span>)</span><br><span class="line">            <span class="comment">// 递归结束，回溯，将上一个位置释放</span></span><br><span class="line">			st[i] = <span class="literal">false</span></span><br><span class="line">			path = path[:<span class="built_in">len</span>(path)<span class="number">-1</span>]</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="复原IP地址"><a href="#复原IP地址" class="headerlink" title="复原IP地址"></a>复原IP地址</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	res  []<span class="type">string</span></span><br><span class="line">	path []<span class="type">int</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">IpDfs</span><span class="params">(ipSegment <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="comment">// path == 3 则无需继续切分</span></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(path) &gt;= <span class="number">3</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> v, ok := strconv.Atoi(ipSegment); ok != <span class="literal">nil</span> &amp;&amp; v &gt; <span class="number">255</span> &#123;</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">len</span>(ipSegment) &lt;= <span class="number">3</span> &#123;</span><br><span class="line">			ipAdd := strconv.Itoa(path[<span class="number">0</span>])</span><br><span class="line">			<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(path); i++ &#123;</span><br><span class="line">				v := strconv.Itoa(path[i])</span><br><span class="line">				ipAdd += <span class="string">&quot;.&quot;</span> + v</span><br><span class="line">			&#125;</span><br><span class="line">            ipAdd += <span class="string">&quot;.&quot;</span> + ipSegment</span><br><span class="line">			res = <span class="built_in">append</span>(res, ipAdd)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 回溯</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">3</span>; i++ &#123;</span><br><span class="line">		<span class="comment">// 获取ip</span></span><br><span class="line">		ipStr := ipSegment[:i+<span class="number">1</span>]</span><br><span class="line">		v, ok := strconv.Atoi(ipStr)</span><br><span class="line">		<span class="keyword">if</span> ok != <span class="literal">nil</span> || v &gt; <span class="number">255</span> &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		path = <span class="built_in">append</span>(path, v)</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 截断：ipSegment[0:1]</span></span><br><span class="line">		tmpIp := ipSegment[i+<span class="number">1</span>:]</span><br><span class="line">		IpDfs(tmpIp)</span><br><span class="line">		path = path[:<span class="built_in">len</span>(path)<span class="number">-1</span>]</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
 
 <h2 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h2><h3 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h3><h4 id="LRU-算法"><a href="#LRU-算法" class="headerlink" title="LRU 算法"></a>LRU 算法</h4><p>​	LRU缓存（最近最少使用）数据结构，使用一个 <code>HashMap</code> 进行O(1)的查询，并使用双向链表作为数据存储结构；</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> algorithm</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LRUCache <span class="keyword">struct</span> &#123;</span><br><span class="line">	Capacity   <span class="type">int</span></span><br><span class="line">	Size       <span class="type">int</span></span><br><span class="line">	Head, Tail *DLinkedNode</span><br><span class="line">	cache      <span class="keyword">map</span>[<span class="type">int</span>]*DLinkedNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> DLinkedNode <span class="keyword">struct</span> &#123;</span><br><span class="line">	Prev, Next *DLinkedNode</span><br><span class="line">	Key, Value <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initDLinkedNode</span><span class="params">()</span></span> *DLinkedNode &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;DLinkedNode&#123;</span><br><span class="line">		Prev: <span class="literal">nil</span>,</span><br><span class="line">		Next: <span class="literal">nil</span>,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Constructor</span><span class="params">(capacity <span class="type">int</span>)</span></span> LRUCache &#123;</span><br><span class="line">	l := LRUCache&#123;</span><br><span class="line">		Capacity: capacity,</span><br><span class="line">		Head:     initDLinkedNode(),</span><br><span class="line">		Tail:     initDLinkedNode(),</span><br><span class="line">		cache:    <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">int</span>]*DLinkedNode),</span><br><span class="line">	&#125;</span><br><span class="line">	l.Head.Next = l.Tail</span><br><span class="line">	l.Tail.Prev = l.Head</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> l</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> MoveToHead(node *DLinkedNode) <span class="type">bool</span> &#123;</span><br><span class="line">	this.removeNode(node)</span><br><span class="line">	this.AddToHead(node)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> removeNode(node *DLinkedNode) &#123;</span><br><span class="line">	node.Prev.Next = node.Next</span><br><span class="line">	node.Next.Prev = node.Prev</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> AddToHead(node *DLinkedNode) <span class="type">bool</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 移动到head head.next =&gt; tmp head.next = node,</span></span><br><span class="line"><span class="comment">	tmp.pre =&gt; node, node.pre =&gt; head, node.next = tmp</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line"></span><br><span class="line">	node.Prev = this.Head</span><br><span class="line">	node.Next = this.Head.Next</span><br><span class="line">	this.Head.Next.Prev = node</span><br><span class="line">	this.Head.Next = node</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> removeTail() *DLinkedNode &#123;</span><br><span class="line">	node := this.Tail.Prev</span><br><span class="line">	this.removeNode(node)</span><br><span class="line">	<span class="keyword">return</span> node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> Get(key <span class="type">int</span>) <span class="type">int</span> &#123;</span><br><span class="line">	<span class="comment">// 判断是否存在</span></span><br><span class="line">	<span class="keyword">if</span> _, ok := this.cache[key]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 判断value是否为nil</span></span><br><span class="line">	node := this.cache[key]</span><br><span class="line">	<span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将node移动至头指针</span></span><br><span class="line">	ok := this.MoveToHead(node)</span><br><span class="line">	<span class="keyword">if</span> ok &#123;</span><br><span class="line">		<span class="keyword">return</span> node.Value</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LRUCache)</span></span> Put(key <span class="type">int</span>, value <span class="type">int</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> _, ok := this.cache[key]; !ok &#123;</span><br><span class="line">		node := initDLinkedNode()</span><br><span class="line">		node.Key = key</span><br><span class="line">		node.Value = value</span><br><span class="line">		this.cache[key] = node</span><br><span class="line">		this.AddToHead(node)</span><br><span class="line">		this.Size++</span><br><span class="line">		<span class="keyword">if</span> this.Size &gt; this.Capacity &#123;</span><br><span class="line">			removed := this.removeTail()</span><br><span class="line">			<span class="built_in">delete</span>(this.cache, removed.Key)</span><br><span class="line">			this.Size--</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		node := this.cache[key]</span><br><span class="line">		node.Value = value</span><br><span class="line">		this.MoveToHead(node)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -238,6 +410,8 @@
 
 <h3 id="实际应用-1"><a href="#实际应用-1" class="headerlink" title="实际应用"></a>实际应用</h3><h4 id="合并多个有序文件"><a href="#合并多个有序文件" class="headerlink" title="合并多个有序文件"></a>合并多个有序文件</h4><p>维护一个堆，从多个小文件中获取一个字符串到堆中（有序的文件，因此字符串也是排序之后的），将堆顶元素写入大文件中，继续从刚刚拿到字符串的文件中取下一个字符串；直到所有字符串排序；</p>
 <h4 id="大数据量（10亿）求topK"><a href="#大数据量（10亿）求topK" class="headerlink" title="大数据量（10亿）求topK"></a>大数据量（10亿）求topK</h4><p>将10亿数据进行分片，每个文件包含1亿的数据；依次堆小文件进行topk排序，获取每个小文件的topk；然后用这些小文件的topk重新组织一个堆，获取前K个数据；就是这10亿数据的topK；</p>
+<h2 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h2><h3 id="二叉树的中序遍历"><a href="#二叉树的中序遍历" class="headerlink" title="二叉树的中序遍历"></a>二叉树的中序遍历</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">package algorithm</span><br><span class="line"></span><br><span class="line">type TreeNode struct &#123;</span><br><span class="line">	Val   int</span><br><span class="line">	Left  *TreeNode</span><br><span class="line">	Right *TreeNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func inorderTraversal(root *TreeNode) (res []int) &#123;</span><br><span class="line">	stack := []*TreeNode&#123;&#125;</span><br><span class="line">	for root != nil || len(stack) &gt; 0&#123;</span><br><span class="line">		for root != nil &#123;</span><br><span class="line">		     stack = append(stack,root)</span><br><span class="line">		     root = root.Left</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		root = stack[len(stack) -1]</span><br><span class="line">		stack = stack[:len(stack)-1]</span><br><span class="line">		res = append(res,tmpVal.Val)</span><br><span class="line">		root = root.Right</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -288,7 +462,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-22 00:04:28" itemprop="dateModified" datetime="2024-07-22T00:04:28+08:00">2024-07-22</time>
+                <time title="修改时间：2024-08-02 12:11:10" itemprop="dateModified" datetime="2024-08-02T12:11:10+08:00">2024-08-02</time>
               </span>
 
           
@@ -302,7 +476,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Go-GC"><a href="#Go-GC" class="headerlink" title="Go GC"></a>Go GC</h1><p><strong>内存管理的组件</strong></p>
+          <h1 id="Go-进阶"><a href="#Go-进阶" class="headerlink" title="Go 进阶"></a>Go 进阶</h1><h2 id="Go-GC"><a href="#Go-GC" class="headerlink" title="Go GC"></a>Go GC</h2><p><strong>内存管理的组件</strong></p>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/mutator-allocator-collector.png" alt="mutator-allocator-collector"></p>
 <p>上图中用户程序（Mutator）通过内存分配器（Allocator）在堆（heap）上分配空间，Go 的垃圾回收器（Collector）回收堆上的空间；</p>
 <p>触发GC的条件：</p>
@@ -314,7 +488,7 @@
 <h2 id="三色标记-垃圾回收"><a href="#三色标记-垃圾回收" class="headerlink" title="三色标记-垃圾回收"></a>三色标记-垃圾回收</h2><p>三色标记垃圾收集器的执行过程如下：</p>
 <ul>
 <li>扫描所有存在外部引用的对象，将其标记成灰色；</li>
-<li>将灰色集合中标记成黑色</li>
+<li>将集合中标记成黑色</li>
 <li>将黑色对象指向的对象标记成灰色</li>
 <li>重复上面两个步骤；</li>
 </ul>
@@ -336,11 +510,29 @@
 <p>GMP调度流程大致如下：</p>
 <ul>
 <li>线程M想运行任务就需得获取 P，即与P关联。</li>
-<li>然从 P 的本地队列(LRQ)获取 G</li>
+<li>然后从 P 的本地队列(LRQ)获取 G</li>
 <li>若LRQ中没有可运行的G，M 会尝试从全局队列(GRQ)拿一批G放到P的本地队列，</li>
 <li>若全局队列也未找到可运行的G时候，M会随机从其他 P 的本地队列偷一半放到自己 P 的本地队列。</li>
 <li>拿到可运行的G之后，M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。</li>
 </ul>
+<h2 id="Go内存分配"><a href="#Go内存分配" class="headerlink" title="Go内存分配"></a>Go内存分配</h2><h3 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h3><p>Go在程序启动的时候会首先申请一块内存区（虚拟的地址空间），切成小块之后进行管理；分别是spans，bitmap, arena(堆空间)</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/go_mem_base.jpeg" alt="go_mem_base"></p>
+<p><code>arena区域</code>就是我们所谓的堆区，Go动态分配的内存都是在这个区域</p>
+<p><code>bitmap区域</code>标识<code>arena</code>区域哪些地址保存了对象，并且用<code>4bit</code>标志位表示对象是否包含指针、<code>GC</code>标记信息</p>
+<p><code>spans区域</code>存放<code>mspan</code>（也就是一些<code>arena</code>分割的页组合起来的内存管理基本单元，后文会再讲）的指针</p>
+<h3 id="内存管理组件"><a href="#内存管理组件" class="headerlink" title="内存管理组件"></a>内存管理组件</h3><h4 id="mcache"><a href="#mcache" class="headerlink" title="mcache"></a>mcache</h4><p>​	每一个工作线程都会绑定一个mcache，本地缓存可用的mspan资源，这样可以直接给goroutine用，因为本地缓存的都是不同的mspan因此不同goroutine之间不存在竞争问题，所以不需要消耗锁资源；</p>
+<h3 id="内存分配的基本原理"><a href="#内存分配的基本原理" class="headerlink" title="内存分配的基本原理"></a>内存分配的基本原理</h3><p>在计算机科学中，内存分配是指为程序中的变量和数据结构分配存储空间的过程。在 Golang 中，内存分配主要由 Go 运行时系统（runtime）负责，主要包括以下两个方面：</p>
+<ul>
+<li>堆内存分配：堆内存是用于动态分配的内存区域，主要用于存储程序运行过程中创建的对象和数据结构。通过 new、make 等函数或者使用指针进行内存分配时，都会在堆上分配内存。</li>
+<li>栈内存分配：栈内存是用于存放函数调用时的局部变量和返回地址等信息的内存区域。基本类型（如整型、浮点型、布尔型等）和小对象（通常小于 64 字节）的内存分配通常发生在栈上。</li>
+</ul>
+<p>Go 使用了一个称为“tcmalloc”（thread-caching malloc）的内存分配器，最初由 Google 开发。tcmalloc 的设计目标是减少全局锁的竞争，提高多线程程序的性能。Go 的内存分配器是基于 tcmalloc 概念的一个实现，有几个关键的组成部分：</p>
+<ul>
+<li>M: 代表操作系统线程（machine）。</li>
+<li>P: 代表处理器（processor），管理着一组本地缓存。</li>
+<li>G: 代表 goroutine，是 Go 程序执行的最小单位。</li>
+</ul>
+<p>每个 P 都有自己的内存缓存（mcache），用于小对象的快速分配。当 mcache 用完时，P 会从中心缓存（mcentral）获取内存。如果 mcentral 也不足，内存分配器会向操作系统请求更多内存。</p>
 <h2 id="CSP模型"><a href="#CSP模型" class="headerlink" title="CSP模型"></a>CSP模型</h2><p>介绍：CSP用于描述两个独立的并发实体之间通过共享的channel进行通信的并发模型；</p>
 <h3 id="CSP模型核心概念"><a href="#CSP模型核心概念" class="headerlink" title="CSP模型核心概念"></a>CSP模型核心概念</h3><h4 id="Goroutines"><a href="#Goroutines" class="headerlink" title="Goroutines"></a>Goroutines</h4><p>Goroutine是Go轻量级线程的实现，启动成本极低，使得并发成为Go程序设计的自然组成部分。通过在函数调用前添加<code>go</code>关键字，即可轻松创建一个新的goroutine。</p>
 <h4 id="Channels"><a href="#Channels" class="headerlink" title="Channels"></a>Channels</h4><p>Channel是CSP模型中的核心组件，它提供了一种安全的通信机制，使得goroutines之间能够通过发送和接收数据进行通信。Channel可以是带缓冲或无缓冲的，定义时通过<code>make(chan Type, [buffer])</code>指定。</p>
@@ -539,47 +731,12 @@
 <h2 id="Map数据结构，并发安全"><a href="#Map数据结构，并发安全" class="headerlink" title="Map数据结构，并发安全"></a>Map数据结构，并发安全</h2><h3 id="Map的内部源码"><a href="#Map的内部源码" class="headerlink" title="Map的内部源码"></a>Map的内部源码</h3><ul>
 <li>在Go中map是一个指针，指向的是<code>hmap</code>的结构体</li>
 </ul>
-<pre><code class="go">// A header for a Go map.
-type hmap struct &#123;
-    // Make sure this stays in sync with the compiler&#39;s definition.
-    count     int // # live cells == size of map.  Must be first (used by len() builtin)
-    flags     uint8
-    B         uint8  // log_2 of # of buckets (can hold up to loadFactor * 2^B items)
-    noverflow uint16 // approximate number of overflow buckets; see incrnoverflow for details
-    hash0     uint32 // hash seed
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// Make sure this stays in sync with the compiler&#x27;s definition.</span></span><br><span class="line">	count     <span class="type">int</span> <span class="comment">// # live cells == size of map.  Must be first (used by len() builtin)</span></span><br><span class="line">	flags     <span class="type">uint8</span></span><br><span class="line">	B         <span class="type">uint8</span>  <span class="comment">// log_2 of # of buckets (can hold up to loadFactor * 2^B items)</span></span><br><span class="line">	noverflow <span class="type">uint16</span> <span class="comment">// approximate number of overflow buckets; see incrnoverflow for details</span></span><br><span class="line">	hash0     <span class="type">uint32</span> <span class="comment">// hash seed</span></span><br><span class="line"></span><br><span class="line">	buckets    unsafe.Pointer <span class="comment">// array of 2^B Buckets. may be nil if count==0.</span></span><br><span class="line">	oldbuckets unsafe.Pointer <span class="comment">// previous bucket array of half the size, non-nil only when growing</span></span><br><span class="line">	nevacuate  <span class="type">uintptr</span>        <span class="comment">// progress counter for evacuation (buckets less than this have been evacuated)</span></span><br><span class="line"></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A bucket for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    tophash [bucketCnt]<span class="type">uint8</span>        </span><br><span class="line">    <span class="comment">// len为8的数组</span></span><br><span class="line">    <span class="comment">// 用来快速定位key是否在这个bmap中</span></span><br><span class="line">    <span class="comment">// 桶的槽位数组，一个桶最多8个槽位，如果key所在的槽位在tophash中，则代表该key在这个桶中</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//底层定义的常量 </span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    bucketCntBits = <span class="number">3</span></span><br><span class="line">    bucketCnt     = <span class="number">1</span> &lt;&lt; bucketCntBits</span><br><span class="line">    <span class="comment">// 一个桶最多8个位置</span></span><br><span class="line">）</span><br><span class="line"></span><br><span class="line">但这只是表面(src/runtime/hashmap.<span class="keyword">go</span>)的结构，编译期间会给它加料，动态地创建一个新的结构：</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    </span><br><span class="line">  tophash [bucketCnt]<span class="type">uint8</span></span><br><span class="line">    </span><br><span class="line">  topbits  [<span class="number">8</span>]<span class="type">uint8</span></span><br><span class="line">  keys     [<span class="number">8</span>]keytype</span><br><span class="line">  values   [<span class="number">8</span>]valuetype</span><br><span class="line">  pad      <span class="type">uintptr</span></span><br><span class="line">  overflow <span class="type">uintptr</span></span><br><span class="line">  <span class="comment">// 溢出桶</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-    buckets    unsafe.Pointer // array of 2^B Buckets. may be nil if count==0.
-    oldbuckets unsafe.Pointer // previous bucket array of half the size, non-nil only when growing
-    nevacuate  uintptr        // progress counter for evacuation (buckets less than this have been evacuated)
 
-    extra *mapextra // optional fields
-&#125;
 
-// A bucket for a Go map.
-type bmap struct &#123;
-    tophash [bucketCnt]uint8        
-    // len为8的数组
-    // 用来快速定位key是否在这个bmap中
-    // 桶的槽位数组，一个桶最多8个槽位，如果key所在的槽位在tophash中，则代表该key在这个桶中
-&#125;
-//底层定义的常量 
-const (
-    bucketCntBits = 3
-    bucketCnt     = 1 &lt;&lt; bucketCntBits
-    // 一个桶最多8个位置
-）
-
-但这只是表面(src/runtime/hashmap.go)的结构，编译期间会给它加料，动态地创建一个新的结构：
-
-type bmap struct &#123;
-  topbits  [8]uint8
-  keys     [8]keytype
-  values   [8]valuetype
-  pad      uintptr
-  overflow uintptr
-  // 溢出桶
-&#125;
-</code></pre>
+<h3 id="Map的rehash"><a href="#Map的rehash" class="headerlink" title="Map的rehash"></a>Map的rehash</h3><h4 id="hash冲突解决方案"><a href="#hash冲突解决方案" class="headerlink" title="hash冲突解决方案"></a>hash冲突解决方案</h4><p>开放寻址法</p>
+<p>拉链法</p>
 
       
     </div>
@@ -744,7 +901,7 @@ type bmap struct &#123;
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-21 17:19:00" itemprop="dateModified" datetime="2024-07-21T17:19:00+08:00">2024-07-21</time>
+                <time title="修改时间：2024-07-29 10:35:59" itemprop="dateModified" datetime="2024-07-29T10:35:59+08:00">2024-07-29</time>
               </span>
 
           
@@ -903,7 +1060,7 @@ type bmap struct &#123;
 <li><p><strong>尽量的扩展索引</strong>，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可。</p>
 </li>
 </ol>
-<h1 id="MySQL-问题调优"><a href="#MySQL-问题调优" class="headerlink" title="MySQL 问题调优"></a>MySQL 问题调优</h1><h2 id="SQL卡死"><a href="#SQL卡死" class="headerlink" title="SQL卡死"></a>SQL卡死</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><pre><code>客户私有化环境中执行sql文件时卡死，从现象上看是卡死在某一个语句，单独拿出来依然无法执行；从私有化环境中导出到开发环境执行，成功通过；初步怀疑是环境问题，从docker环境中新建一个相同的镜像环境，执行依然成功；问题卡住；
+<h1 id="MySQL-问题调优"><a href="#MySQL-问题调优" class="headerlink" title="MySQL 问题调优"></a>MySQL 问题调优</h1><h2 id="MySQL深度翻页"><a href="#MySQL深度翻页" class="headerlink" title="MySQL深度翻页"></a>MySQL深度翻页</h2><h2 id="SQL卡死"><a href="#SQL卡死" class="headerlink" title="SQL卡死"></a>SQL卡死</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><pre><code>客户私有化环境中执行sql文件时卡死，从现象上看是卡死在某一个语句，单独拿出来依然无法执行；从私有化环境中导出到开发环境执行，成功通过；初步怀疑是环境问题，从docker环境中新建一个相同的镜像环境，执行依然成功；问题卡住；
 我们从头开始分析：
 1、执行explain未发现问题
 2、执行show full proceelist 发现没有连接；
@@ -1572,63 +1729,6 @@ type bmap struct &#123;
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/22/Apollo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/22/Apollo/" class="post-title-link" itemprop="url">Apollo Config</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-08-22 11:32:01" itemprop="dateCreated datePublished" datetime="2023-08-22T11:32:01+08:00">2023-08-22</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Apollo-Config"><a href="#Apollo-Config" class="headerlink" title="Apollo Config"></a>Apollo Config</h1>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/22/Docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1697,78 +1797,6 @@ type bmap struct &#123;
 <ul>
 <li>docker exec -it <CONTAINER> bash</li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/22/Go%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/22/Go%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">Go 八股文</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-08-22 11:29:03 / 修改时间：11:32:01" itemprop="dateCreated datePublished" datetime="2023-08-22T11:29:03+08:00">2023-08-22</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>八股文，不背不行，背了也不行</p>
-<h1 id="Go基础知识"><a href="#Go基础知识" class="headerlink" title="Go基础知识"></a>Go基础知识</h1><h2 id="Make-amp-New的区别"><a href="#Make-amp-New的区别" class="headerlink" title="Make&amp;New的区别"></a>Make&amp;New的区别</h2><h3 id="New"><a href="#New" class="headerlink" title="New"></a>New</h3><ul>
-<li>分配内存，内存里存的值是零值。</li>
-<li>只有一个参数，参数是分配的内存空间。</li>
-<li>Go语音里任何参数都可以是New的参数，如int，数组，结构体，函数类型都可以。</li>
-<li>返回的是指针</li>
-</ul>
-<h3 id="Make"><a href="#Make" class="headerlink" title="Make"></a>Make</h3><ul>
-<li>分配和初始化内存</li>
-<li>只能用于slice，map，chan</li>
-<li>返回原始类型，例如slice</li>
-</ul>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">3</span>) <span class="comment">// 返回的类型是[]int</span></span><br></pre></td></tr></table></figure>
-
 
       
     </div>
@@ -1853,7 +1881,7 @@ type bmap struct &#123;
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1881,7 +1909,7 @@ type bmap struct &#123;
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
