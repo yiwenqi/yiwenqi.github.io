@@ -835,6 +835,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/03/18/MySql%E5%8D%83%E4%B8%87%E7%BA%A7%E5%88%AB%E6%95%B0%E6%8D%AE%E6%96%B0%E5%A2%9E%E5%AD%97%E6%AE%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/18/MySql%E5%8D%83%E4%B8%87%E7%BA%A7%E5%88%AB%E6%95%B0%E6%8D%AE%E6%96%B0%E5%A2%9E%E5%AD%97%E6%AE%B5/" class="post-title-link" itemprop="url">MySql 常见问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2025-03-18 11:27:57" itemprop="dateCreated datePublished" datetime="2025-03-18T11:27:57+08:00">2025-03-18</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="MySql-千万级别数据新增字段"><a href="#MySql-千万级别数据新增字段" class="headerlink" title="MySql 千万级别数据新增字段"></a>MySql 千万级别数据新增字段</h1><h2 id="MySQL-大表数据添加新字段"><a href="#MySQL-大表数据添加新字段" class="headerlink" title="MySQL 大表数据添加新字段"></a><strong>MySQL 大表数据添加新字段</strong></h2><p>​	直接添加会导致<code>mysql</code>卡死,同时命令执行超时；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table product_table add column column_name varchar(32) default &quot;&quot; </span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>一、扩展新表</p>
+<h5 id="扩展新表方案"><a href="#扩展新表方案" class="headerlink" title="扩展新表方案"></a><strong>扩展新表方案</strong></h5><blockquote>
+<p>创建一个新表<code>user_ext(id,user_id,flag)</code>,将<code>user</code>表的id导入<code>user_ext</code>,然后<code>user</code>表和<code>user_ext</code>通过关联就可以间接实现我们的需求。</p>
+</blockquote>
+<p>二、新建一张表</p>
+<blockquote>
+<p>创建一个临时的新表，首先复制旧表的结构（包含索引）</p>
+</blockquote>
+<blockquote>
+<p>给新表加上新增的字段</p>
+</blockquote>
+<blockquote>
+<p>把旧表的数据复制过来</p>
+</blockquote>
+<blockquote>
+<p>删除旧表，重命名新表的名字为旧表的名字</p>
+</blockquote>
+<p>*建议在脱机情况下操作，防止数据不完整；</p>
+<p>三、升级Mysql版本到8.0以上</p>
+<p>总结：</p>
+<ul>
+<li>若是在线上添加则可以进行如下方案:<ul>
+<li>数据不大：直接天机</li>
+<li>数据大：使用pt_osc添加（percona tools 专用与线上数据结构定义的修改工具）</li>
+<li>数据大，且是热表：先在从库添加 再进行主从切换</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/03/18/Go-%E8%BF%9B%E9%98%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1150,94 +1238,6 @@
 </ul>
 <h3 id="Map的rehash"><a href="#Map的rehash" class="headerlink" title="Map的rehash"></a>Map的rehash</h3><h4 id="hash冲突解决方案"><a href="#hash冲突解决方案" class="headerlink" title="hash冲突解决方案"></a>hash冲突解决方案</h4><p>开放寻址法</p>
 <p>拉链法</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/03/18/MySql%E5%8D%83%E4%B8%87%E7%BA%A7%E5%88%AB%E6%95%B0%E6%8D%AE%E6%96%B0%E5%A2%9E%E5%AD%97%E6%AE%B5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/03/18/MySql%E5%8D%83%E4%B8%87%E7%BA%A7%E5%88%AB%E6%95%B0%E6%8D%AE%E6%96%B0%E5%A2%9E%E5%AD%97%E6%AE%B5/" class="post-title-link" itemprop="url">MySql 常见问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2025-03-18 11:27:57" itemprop="dateCreated datePublished" datetime="2025-03-18T11:27:57+08:00">2025-03-18</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MySql-千万级别数据新增字段"><a href="#MySql-千万级别数据新增字段" class="headerlink" title="MySql 千万级别数据新增字段"></a>MySql 千万级别数据新增字段</h1><h2 id="MySQL-大表数据添加新字段"><a href="#MySQL-大表数据添加新字段" class="headerlink" title="MySQL 大表数据添加新字段"></a><strong>MySQL 大表数据添加新字段</strong></h2><p>​	直接添加会导致<code>mysql</code>卡死,同时命令执行超时；</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table product_table add column column_name varchar(32) default &quot;&quot; </span><br></pre></td></tr></table></figure>
-
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>一、扩展新表</p>
-<h5 id="扩展新表方案"><a href="#扩展新表方案" class="headerlink" title="扩展新表方案"></a><strong>扩展新表方案</strong></h5><blockquote>
-<p>创建一个新表<code>user_ext(id,user_id,flag)</code>,将<code>user</code>表的id导入<code>user_ext</code>,然后<code>user</code>表和<code>user_ext</code>通过关联就可以间接实现我们的需求。</p>
-</blockquote>
-<p>二、新建一张表</p>
-<blockquote>
-<p>创建一个临时的新表，首先复制旧表的结构（包含索引）</p>
-</blockquote>
-<blockquote>
-<p>给新表加上新增的字段</p>
-</blockquote>
-<blockquote>
-<p>把旧表的数据复制过来</p>
-</blockquote>
-<blockquote>
-<p>删除旧表，重命名新表的名字为旧表的名字</p>
-</blockquote>
-<p>*建议在脱机情况下操作，防止数据不完整；</p>
-<p>三、升级Mysql版本到8.0以上</p>
-<p>总结：</p>
-<ul>
-<li>若是在线上添加则可以进行如下方案:<ul>
-<li>数据不大：直接天机</li>
-<li>数据大：使用pt_osc添加（percona tools 专用与线上数据结构定义的修改工具）</li>
-<li>数据大，且是热表：先在从库添加 再进行主从切换</li>
-</ul>
-</li>
-</ul>
 
       
     </div>
