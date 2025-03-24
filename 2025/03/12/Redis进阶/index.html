@@ -24,9 +24,13 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis进阶">
 <meta property="og:url" content="http://example.com/2025/03/12/Redis%E8%BF%9B%E9%98%B6/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Yiwenqi&#39;s Blog">
 <meta property="og:description" content="Redis基础命令key 命令：    序号 命令 描述    1 del key 删除指定的key， 可以同时删除多个：del key1 key2 …   2 dump key 序列号给定key   3 exist key 检查key是否存在   4 expire key second 给key设置过期时间   5 key pattern 查找所有符合（pattern）的key； （*代表多个，">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_sds_%E7%BC%93%E5%86%B2%E5%99%A8%E6%BA%A2%E5%87%BA.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_sds_buffer.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_sds_ziplist_struct.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_ziplist_node.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_list_%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/hash%E4%B8%8Estring.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF.webp">
@@ -37,10 +41,10 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_bgrewirteaof_%E5%86%99%E6%97%B6%E5%A4%8D%E5%88%B6.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_%E7%BC%93%E5%AD%98.png">
 <meta property="article:published_time" content="2025-03-12T14:27:00.925Z">
-<meta property="article:modified_time" content="2025-03-12T14:32:42.103Z">
+<meta property="article:modified_time" content="2025-03-24T13:55:20.421Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_list_%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_sds_%E7%BC%93%E5%86%B2%E5%99%A8%E6%BA%A2%E5%87%BA.jpg">
 
 <link rel="canonical" href="http://example.com/2025/03/12/Redis%E8%BF%9B%E9%98%B6/">
 
@@ -55,7 +59,7 @@
   };
 </script>
 
-  <title>Redis进阶 | Hexo</title>
+  <title>Redis进阶 | Yiwenqi's Blog</title>
   
 
 
@@ -106,7 +110,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Hexo</h1>
+      <h1 class="site-title">Yiwenqi's Blog</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -169,7 +173,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="Yiwenqi's Blog">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -182,10 +186,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-12 22:27:00 / 修改时间：22:32:42" itemprop="dateCreated datePublished" datetime="2025-03-12T22:27:00+08:00">2025-03-12</time>
+              <time title="创建时间：2025-03-12 22:27:00" itemprop="dateCreated datePublished" datetime="2025-03-12T22:27:00+08:00">2025-03-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-24 21:55:20" itemprop="dateModified" datetime="2025-03-24T21:55:20+08:00">2025-03-24</time>
+              </span>
 
           
 
@@ -354,12 +364,49 @@
 </ul>
 </li>
 </ul>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_sds_%E7%BC%93%E5%86%B2%E5%99%A8%E6%BA%A2%E5%87%BA.jpg" alt="redis_list_内部实现"></p>
+<ul>
+<li>SDS数据结构</li>
+</ul>
+<p>SDS结构体的的组成有:</p>
+<ol>
+<li>len: 记录buf数组中已使用的字节数量</li>
+<li>alloc: 分配的buf数组长度，不包括头和空字符结尾</li>
+<li>flags: 标志位， 最低3位表示header类型，</li>
+<li>buf[]: 字符数组，用于存放字符串</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Note: sdshdr5 is never used, we just access the flags byte directly.</span></span><br><span class="line"><span class="comment"> * However is here to document the layout of type 5 SDS strings. */</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">__attribute__</span> ((__packed__)) sdshdr5 &#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> flags; <span class="comment">/* 3 lsb of type, and 5 msb of string length */</span></span><br><span class="line">    <span class="type">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">__attribute__</span> ((__packed__)) sdshdr8 &#123;</span><br><span class="line">    <span class="type">uint8_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="type">uint8_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="type">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">__attribute__</span> ((__packed__)) sdshdr16 &#123;</span><br><span class="line">    <span class="type">uint16_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="type">uint16_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="type">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">__attribute__</span> ((__packed__)) sdshdr32 &#123;</span><br><span class="line">    <span class="type">uint32_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="type">uint32_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="type">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">__attribute__</span> ((__packed__)) sdshdr64 &#123;</span><br><span class="line">    <span class="comment">//记录buf数组中已使用的字节数量</span></span><br><span class="line">    <span class="type">uint64_t</span> len; </span><br><span class="line">    <span class="comment">//分配的buf数组长度，不包括头和空字符结尾 </span></span><br><span class="line">    <span class="type">uint64_t</span> alloc;</span><br><span class="line">    <span class="comment">// 标志位， 最低3位表示类型，另外5个位没有使用</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> flags; </span><br><span class="line">    <span class="type">char</span> buf[];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>举个例子：我们在一个SDS中存放了redis字符串，SDS是怎么表示的呢？</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_sds_buffer.jpg" alt="redis_sds_buffer.jpg"></p>
 <h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><p>List 类型的底层数据结构是由<strong>双向链表或压缩列表</strong>实现的：</p>
 <ul>
 <li>如果列表的元素个数小于 <code>512</code> 个（默认值，可由 <code>list-max-ziplist-entries</code> 配置），列表每个元素的值都小于 <code>64</code> 字节（默认值，可由 <code>list-max-ziplist-value</code> 配置），Redis 会使用<strong>压缩列表</strong>作为 List 类型的底层数据结构；</li>
 <li>如果列表的元素不满足上面的条件，Redis 会使用<strong>双向链表</strong>作为 List 类型的底层数据结构；</li>
 </ul>
-<p>但是<strong>在 Redis 3.2 版本之后，List 数据类型底层数据结构就只由 quicklist 实现了，替代了双向链表和压缩列表</strong></p>
+<h4 id="压缩列表："><a href="#压缩列表：" class="headerlink" title="压缩列表："></a>压缩列表：</h4><p>​    压缩列表是一系列特殊编码的连续内存块组成的数据结构；可以包含任意多个节点，每个节点包含一个字节数组或整数值；</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_sds_ziplist_struct.jpg" alt="redis_sds_ziplist_struct"></p>
+<p>压缩列表的节点值：</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/redis_ziplist_node.jpg" alt="redis_ziplis_nod"></p>
+<ul>
+<li>prev_entry_len: 前序节点的长度</li>
+<li>encoding：当前节点的数据类型和长度</li>
+<li>value：根据长度保持字节数组或整数</li>
+</ul>
+<p>压缩列表的特点：</p>
+<p>优势：</p>
+<ul>
+<li>压缩列表ziplist结构本身就是一个连续的内存块，由表头、若干个entry节点和压缩列表尾部标识符zlend组成，通过一系列编码规则，提高内存的利用率，使用于存储整数和短字符串。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>每次插入或删除一个元素时，都需要频繁的调用realloc()函数进行内存的扩展或减小，然后进行数据”搬移”，造成严重效率的损失。</li>
+</ul>
+<h4 id="QuickList-快速列表"><a href="#QuickList-快速列表" class="headerlink" title="QuickList 快速列表"></a>QuickList 快速列表</h4><p>但是<strong>在 Redis 3.2 版本之后，List 数据类型底层数据结构就只由 quicklist 实现了，替代了双向链表和压缩列表</strong></p>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_list_%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0.png" alt="redis_list_内部实现"></p>
 <p>常用命令：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 将一个或多个值value插入到key列表的表头(最左边)，最后的值在最前面</span><br><span class="line">LPUSH key value [value ...] </span><br><span class="line"># 将一个或多个值value插入到key列表的表尾(最右边)</span><br><span class="line">RPUSH key value [value ...]</span><br><span class="line"># 移除并返回key列表的头元素</span><br><span class="line">LPOP key     </span><br><span class="line"># 移除并返回key列表的尾元素</span><br><span class="line">RPOP key </span><br><span class="line"></span><br><span class="line"># 返回列表key中指定区间内的元素，区间以偏移量start和stop指定，从0开始</span><br><span class="line">LRANGE key start stop</span><br><span class="line"></span><br><span class="line"># 从key列表表头弹出一个元素，没有就阻塞timeout秒，如果timeout=0则一直阻塞</span><br><span class="line">BLPOP key [key ...] timeout</span><br><span class="line"># 从key列表表尾弹出一个元素，没有就阻塞timeout秒，如果timeout=0则一直阻塞</span><br><span class="line">BRPOP key [key ...] timeout</span><br></pre></td></tr></table></figure>
@@ -540,7 +587,7 @@
 <li>第三种方案，使用布隆过滤器快速判断数据是否存在，避免通过查询数据库来判断数据是否存在</li>
 </ul>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/redis_%E7%BC%93%E5%AD%98.png" alt="redis_缓存"></p>
-
+<h2 id="Redis-如何实现强一致性"><a href="#Redis-如何实现强一致性" class="headerlink" title="Redis 如何实现强一致性"></a>Redis 如何实现强一致性</h2>
     </div>
 
     
@@ -559,8 +606,8 @@
       <i class="fa fa-chevron-left"></i> 面试&工作基础知识
     </a></div>
       <div class="post-nav-item">
-    <a href="/2025/03/12/Redis/" rel="next" title="Redis进阶">
-      Redis进阶 <i class="fa fa-chevron-right"></i>
+    <a href="/2025/03/24/Kafka/" rel="next" title="Kafka 进阶">
+      Kafka 进阶 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -620,7 +667,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis"><span class="nav-number">1.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.</span> <span class="nav-text">基础命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E4%B8%AD%E4%B8%8D%E5%90%8C%E7%9A%84%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">Redis中不同的类型的数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#String"><span class="nav-number">1.2.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#List"><span class="nav-number">1.2.2.</span> <span class="nav-text">List</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-number">1.2.2.1.1.</span> <span class="nav-text">消息队列</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash"><span class="nav-number">1.2.3.</span> <span class="nav-text">Hash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">内部实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-1"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.2.3.2.1.</span> <span class="nav-text">缓存对象</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Set"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">Set</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-2"><span class="nav-number">1.2.3.3.1.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%82%B9%E8%B5%9E"><span class="nav-number">1.2.3.3.1.1.</span> <span class="nav-text">点赞</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%85%B1%E5%90%8C%E5%85%B3%E6%B3%A8"><span class="nav-number">1.2.3.3.1.2.</span> <span class="nav-text">共同关注</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%8A%BD%E5%A5%96%E6%B4%BB%E5%8A%A8"><span class="nav-number">1.2.3.3.1.3.</span> <span class="nav-text">抽奖活动</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ZSet"><span class="nav-number">1.2.3.4.</span> <span class="nav-text">ZSet</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-3"><span class="nav-number">1.2.3.4.1.</span> <span class="nav-text">应用场景</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BitMap"><span class="nav-number">1.2.3.5.</span> <span class="nav-text">BitMap</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-1"><span class="nav-number">1.2.3.5.1.</span> <span class="nav-text">内部实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-4"><span class="nav-number">1.2.3.5.2.</span> <span class="nav-text">应用场景</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HyperLogLog"><span class="nav-number">1.2.3.6.</span> <span class="nav-text">HyperLogLog</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GEO"><span class="nav-number">1.2.3.7.</span> <span class="nav-text">GEO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Stream"><span class="nav-number">1.2.3.8.</span> <span class="nav-text">Stream</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB"><span class="nav-number">1.3.1.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF"><span class="nav-number">1.3.2.</span> <span class="nav-text">AOF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%86%99%E7%AD%96%E7%95%A5"><span class="nav-number">1.3.3.</span> <span class="nav-text">三种写策略</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF-%E9%87%8D%E5%86%99%E6%9C%BA%E5%88%B6"><span class="nav-number">1.3.3.0.1.</span> <span class="nav-text">AOF 重写机制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF%E5%90%8E%E5%8F%B0%E9%87%8D%E5%86%99"><span class="nav-number">1.3.3.0.2.</span> <span class="nav-text">AOF后台重写</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB-%E5%92%8C-AOF-%E5%90%88%E4%BD%93"><span class="nav-number">1.3.3.0.3.</span> <span class="nav-text">RDB 和 AOF 合体</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E5%92%8C%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">过期删除策略和内存淘汰策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-number">1.4.1.</span> <span class="nav-text">过期删除策略有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.2.</span> <span class="nav-text">内存淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-number">1.4.3.</span> <span class="nav-text">Redis 内存淘汰策略有哪些？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">1.5.</span> <span class="nav-text">集群高可用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.6.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-number">1.7.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">1.8.</span> <span class="nav-text">缓存穿透</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis"><span class="nav-number">1.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.</span> <span class="nav-text">基础命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E4%B8%AD%E4%B8%8D%E5%90%8C%E7%9A%84%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">Redis中不同的类型的数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#String"><span class="nav-number">1.2.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#List"><span class="nav-number">1.2.2.</span> <span class="nav-text">List</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%EF%BC%9A"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">压缩列表：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#QuickList-%E5%BF%AB%E9%80%9F%E5%88%97%E8%A1%A8"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">QuickList 快速列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-number">1.2.2.3.1.</span> <span class="nav-text">消息队列</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash"><span class="nav-number">1.2.3.</span> <span class="nav-text">Hash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">内部实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-1"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.2.3.2.1.</span> <span class="nav-text">缓存对象</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Set"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">Set</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-2"><span class="nav-number">1.2.3.3.1.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%82%B9%E8%B5%9E"><span class="nav-number">1.2.3.3.1.1.</span> <span class="nav-text">点赞</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%85%B1%E5%90%8C%E5%85%B3%E6%B3%A8"><span class="nav-number">1.2.3.3.1.2.</span> <span class="nav-text">共同关注</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%8A%BD%E5%A5%96%E6%B4%BB%E5%8A%A8"><span class="nav-number">1.2.3.3.1.3.</span> <span class="nav-text">抽奖活动</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ZSet"><span class="nav-number">1.2.3.4.</span> <span class="nav-text">ZSet</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-3"><span class="nav-number">1.2.3.4.1.</span> <span class="nav-text">应用场景</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BitMap"><span class="nav-number">1.2.3.5.</span> <span class="nav-text">BitMap</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-1"><span class="nav-number">1.2.3.5.1.</span> <span class="nav-text">内部实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-4"><span class="nav-number">1.2.3.5.2.</span> <span class="nav-text">应用场景</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HyperLogLog"><span class="nav-number">1.2.3.6.</span> <span class="nav-text">HyperLogLog</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GEO"><span class="nav-number">1.2.3.7.</span> <span class="nav-text">GEO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Stream"><span class="nav-number">1.2.3.8.</span> <span class="nav-text">Stream</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB"><span class="nav-number">1.3.1.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF"><span class="nav-number">1.3.2.</span> <span class="nav-text">AOF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%86%99%E7%AD%96%E7%95%A5"><span class="nav-number">1.3.3.</span> <span class="nav-text">三种写策略</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF-%E9%87%8D%E5%86%99%E6%9C%BA%E5%88%B6"><span class="nav-number">1.3.3.0.1.</span> <span class="nav-text">AOF 重写机制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF%E5%90%8E%E5%8F%B0%E9%87%8D%E5%86%99"><span class="nav-number">1.3.3.0.2.</span> <span class="nav-text">AOF后台重写</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB-%E5%92%8C-AOF-%E5%90%88%E4%BD%93"><span class="nav-number">1.3.3.0.3.</span> <span class="nav-text">RDB 和 AOF 合体</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E5%92%8C%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">过期删除策略和内存淘汰策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-number">1.4.1.</span> <span class="nav-text">过期删除策略有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.2.</span> <span class="nav-text">内存淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-number">1.4.3.</span> <span class="nav-text">Redis 内存淘汰策略有哪些？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">1.5.</span> <span class="nav-text">集群高可用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.6.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-number">1.7.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">1.8.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%BC%BA%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">1.9.</span> <span class="nav-text">Redis 如何实现强一致性</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

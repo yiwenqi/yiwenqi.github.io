@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go 进阶">
 <meta property="og:url" content="http://example.com/2024/07/15/Go-%E8%BF%9B%E9%98%B6/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Yiwenqi&#39;s Blog">
 <meta property="og:description" content="Go 进阶Go GC内存管理的组件  上图中用户程序（Mutator）通过内存分配器（Allocator）在堆（heap）上分配空间，Go 的垃圾回收器（Collector）回收堆上的空间； 触发GC的条件：  阈值：默认内存扩大一倍时，主动触发GC； 定期：默认2min触发一次gc 手动：runtime.gc  三色标记-垃圾回收三色标记垃圾收集器的执行过程如下：  扫描所有存在外部引用的对象，">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/mutator-allocator-collector.png">
@@ -33,8 +33,9 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/Context%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/context%E5%AD%90%E8%8A%82%E7%82%B9%E5%8F%96%E6%B6%88.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%88%87%E7%89%87%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/go_map_struct.jpg">
 <meta property="article:published_time" content="2024-07-15T15:45:41.312Z">
-<meta property="article:modified_time" content="2024-08-02T04:11:10.283Z">
+<meta property="article:modified_time" content="2025-03-24T13:52:48.946Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/mutator-allocator-collector.png">
@@ -52,7 +53,7 @@
   };
 </script>
 
-  <title>Go 进阶 | Hexo</title>
+  <title>Go 进阶 | Yiwenqi's Blog</title>
   
 
 
@@ -103,7 +104,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Hexo</h1>
+      <h1 class="site-title">Yiwenqi's Blog</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -166,7 +167,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="Yiwenqi's Blog">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -187,7 +188,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-08-02 12:11:10" itemprop="dateModified" datetime="2024-08-02T12:11:10+08:00">2024-08-02</time>
+                <time title="修改时间：2025-03-24 21:52:48" itemprop="dateModified" datetime="2025-03-24T21:52:48+08:00">2025-03-24</time>
               </span>
 
           
@@ -460,6 +461,15 @@
 
 
 
+<p>Go map 整体结构图：</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/go_map_struct.jpg" alt="go_map_struct"></p>
+<ul>
+<li>count：代表map中的元素个数</li>
+<li>B : map的容量的对数 (2 ^ B)</li>
+<li>noverflow : 溢出桶的近似数量；用于扩容时判断过载因子是否大于阈值；</li>
+<li>Buckets ： 代表桶数组；</li>
+<li>bmap: 代表桶，每个桶的overflow代表溢出桶的地址；</li>
+</ul>
 <h3 id="Map的rehash"><a href="#Map的rehash" class="headerlink" title="Map的rehash"></a>Map的rehash</h3><h4 id="hash冲突解决方案"><a href="#hash冲突解决方案" class="headerlink" title="hash冲突解决方案"></a>hash冲突解决方案</h4><p>开放寻址法</p>
 <p>拉链法</p>
 
