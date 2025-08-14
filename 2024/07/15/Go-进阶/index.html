@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/%E5%88%87%E7%89%87%E7%BB%93%E6%9E%84.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/go_map_struct.jpg">
 <meta property="article:published_time" content="2024-07-15T15:45:41.312Z">
-<meta property="article:modified_time" content="2025-03-24T13:52:48.946Z">
+<meta property="article:modified_time" content="2025-08-14T07:30:22.980Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/data/mutator-allocator-collector.png">
@@ -188,7 +188,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-24 21:52:48" itemprop="dateModified" datetime="2025-03-24T21:52:48+08:00">2025-03-24</time>
+                <time title="修改时间：2025-08-14 15:30:22" itemprop="dateModified" datetime="2025-08-14T15:30:22+08:00">2025-08-14</time>
               </span>
 
           
@@ -290,7 +290,21 @@
 <p><strong>双端链表</strong> 是用来挂起阻塞的读、写 goroutine 的，在被唤醒时会按照入队顺序公平的进行通知；</p>
 <p>无缓冲的 channel 不会用到 <strong>循环队列</strong> 相关的结构，它必须读写 goroutine 都准备好后才能进行消息交换；</p>
 <p>做为缓冲消息的 <strong>循环队列</strong> 通过一个当前元素个数字段的标记，避免了浪费一个数据空间</p>
-<h4 id="chan的内存泄漏问题"><a href="#chan的内存泄漏问题" class="headerlink" title="chan的内存泄漏问题"></a>chan的内存泄漏问题</h4><p>泄漏的原因是 goroutine 操作 channel 后，处于<strong>发送或接收阻塞状态</strong>，而 channel 处于满或空的状态，一直得不到改变。同时，垃圾回收器也不会回收此类资源，进而导致 gouroutine 会一直处于等待队列中，不见天日。</p>
+<h3 id="chan-的工作流程"><a href="#chan-的工作流程" class="headerlink" title="chan 的工作流程"></a>chan 的工作流程</h3><ul>
+<li>当有goroutine阻塞在接收队列（recv队列）中时，直接将写数据复制给该 goroutine </li>
+<li>当没有goroutine阻塞在接收队列，且缓存队列有剩余空间时，将数据复制到缓存队列中，等待接收；</li>
+<li>当缓存队列没有剩余空间时，将写goroutine阻塞在 sendq （发送队列中）；</li>
+</ul>
+<h3 id="chan-关闭时的读"><a href="#chan-关闭时的读" class="headerlink" title="chan 关闭时的读"></a>chan 关闭时的读</h3><ul>
+<li>根据上面的 chan 工作流程<ul>
+<li>当读关闭的chan时，若缓存队列有值则取缓存队列的值</li>
+<li>当关闭的chan没有值时，则得到chan的零值；</li>
+</ul>
+</li>
+<li>写已经关闭的chan会panic</li>
+<li>关闭已经关闭的chan也会panic</li>
+</ul>
+<h3 id="chan的内存泄漏问题"><a href="#chan的内存泄漏问题" class="headerlink" title="chan的内存泄漏问题"></a>chan的内存泄漏问题</h3><p>泄漏的原因是 goroutine 操作 channel 后，处于<strong>发送或接收阻塞状态</strong>，而 channel 处于满或空的状态，一直得不到改变。同时，垃圾回收器也不会回收此类资源，进而导致 gouroutine 会一直处于等待队列中，不见天日。</p>
 <ul>
 <li>使用超时控制；</li>
 <li>新增关闭channel</li>
@@ -305,21 +319,6 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>reade</td>
-<td>只写</td>
-<td>编译失败</td>
-</tr>
-<tr>
-<td>write</td>
-<td>关闭</td>
-<td>panic</td>
-</tr>
-<tr>
-<td>write</td>
-<td>只读</td>
-<td>编译失败</td>
-</tr>
-<tr>
 <td>close</td>
 <td>nil</td>
 <td>panic</td>
@@ -328,6 +327,21 @@
 <td>close</td>
 <td>关闭</td>
 <td>painc</td>
+</tr>
+<tr>
+<td>write</td>
+<td>关闭</td>
+<td>panic</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody></table>
 <h2 id="context-结构原理"><a href="#context-结构原理" class="headerlink" title="context 结构原理"></a>context 结构原理</h2><p><code>context</code>主要用于父子任务之间的同步取消信号，本质上是一种协程调度的方式。另外在使用<code>context</code>时有两点值得注意：上游任务仅仅使用<code>context</code>通知下游任务不再需要，但不会直接干涉和中断下游任务的执行，由下游任务自行决定后续的处理操作，也就是说<code>context</code>的取消操作是无侵入的；<code>context</code>是线程安全的，因为<code>context</code>本身是不可变的（<code>immutable</code>），因此可以放心地在多个协程中传递使用。</p>
@@ -464,13 +478,27 @@
 <p>Go map 整体结构图：</p>
 <p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/go_map_struct.jpg" alt="go_map_struct"></p>
 <ul>
+<li>tophash 高八位的hash值</li>
 <li>count：代表map中的元素个数</li>
 <li>B : map的容量的对数 (2 ^ B)</li>
 <li>noverflow : 溢出桶的近似数量；用于扩容时判断过载因子是否大于阈值；</li>
 <li>Buckets ： 代表桶数组；</li>
 <li>bmap: 代表桶，每个桶的overflow代表溢出桶的地址；</li>
 </ul>
-<h3 id="Map的rehash"><a href="#Map的rehash" class="headerlink" title="Map的rehash"></a>Map的rehash</h3><h4 id="hash冲突解决方案"><a href="#hash冲突解决方案" class="headerlink" title="hash冲突解决方案"></a>hash冲突解决方案</h4><p>开放寻址法</p>
+<h3 id="Map的扩容"><a href="#Map的扩容" class="headerlink" title="Map的扩容"></a>Map的扩容</h3><ul>
+<li><p>map使用的是hash table 和 桶的结构；</p>
+<p>golang中的扩容包含两种扩容条件：</p>
+</li>
+</ul>
+<p>1、增量扩容：当装载因子大于6.5时则触发扩容，容量翻倍</p>
+<p>2、等量扩容：当溢出桶过多时也会触发扩容此时容量不变，将overflow中的桶进行重新整理</p>
+<h3 id="Map的rehash"><a href="#Map的rehash" class="headerlink" title="Map的rehash"></a>Map的rehash</h3><h4 id="Rehash触发条件"><a href="#Rehash触发条件" class="headerlink" title="Rehash触发条件"></a>Rehash触发条件</h4><ul>
+<li>翻倍扩容：负载因子达到6.5时</li>
+<li>等量扩容：overflow桶过多时会触发，容量不变但会重新整理桶减少链长</li>
+</ul>
+<h4 id="Rehash步骤"><a href="#Rehash步骤" class="headerlink" title="Rehash步骤"></a>Rehash步骤</h4><p>1、分配新的桶数组（空间），将旧桶指向oldbuckets，并将nevacute置为0</p>
+<p>2、当为翻倍扩容时：</p>
+<h4 id="hash冲突解决方案"><a href="#hash冲突解决方案" class="headerlink" title="hash冲突解决方案"></a>hash冲突解决方案</h4><p>开放寻址法</p>
 <p>拉链法</p>
 
     </div>
@@ -552,7 +580,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-%E8%BF%9B%E9%98%B6"><span class="nav-number">1.</span> <span class="nav-text">Go 进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-GC"><span class="nav-number">1.1.</span> <span class="nav-text">Go GC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">1.2.</span> <span class="nav-text">三色标记-垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#STW"><span class="nav-number">1.2.1.</span> <span class="nav-text">STW</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C"><span class="nav-number">1.2.2.</span> <span class="nav-text">混合写屏障</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-GMP"><span class="nav-number">1.3.</span> <span class="nav-text">Go GMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">1.4.</span> <span class="nav-text">Go内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.4.1.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%BB%84%E4%BB%B6"><span class="nav-number">1.4.2.</span> <span class="nav-text">内存管理组件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mcache"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">mcache</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.4.3.</span> <span class="nav-text">内存分配的基本原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">CSP模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.5.1.</span> <span class="nav-text">CSP模型核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Goroutines"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">Goroutines</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Channels"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">Channels</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%81%BF%E5%85%8D%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.2.</span> <span class="nav-text">常见问题与避免方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">问题一：数据竞争</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BA%8C%EF%BC%9A%E6%AD%BB%E9%94%81"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">问题二：死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%89%EF%BC%9Agoroutine%E6%B3%84%E6%BC%8F"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">问题三：goroutine泄漏</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chan-%E5%8E%9F%E7%90%86"><span class="nav-number">1.6.</span> <span class="nav-text">chan 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Chan%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.6.1.</span> <span class="nav-text">Chan数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#chan%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E9%97%AE%E9%A2%98"><span class="nav-number">1.6.1.1.</span> <span class="nav-text">chan的内存泄漏问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chan-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="nav-number">1.6.2.</span> <span class="nav-text">chan 使用规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#context-%E7%BB%93%E6%9E%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.7.</span> <span class="nav-text">context 结构原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.7.1.</span> <span class="nav-text">Context 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#canceler%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.7.2.</span> <span class="nav-text">canceler接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.7.3.</span> <span class="nav-text">Context 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#EmptyCtx"><span class="nav-number">1.7.3.1.</span> <span class="nav-text">EmptyCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cancelCtx"><span class="nav-number">1.7.3.2.</span> <span class="nav-text">cancelCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ValueContext"><span class="nav-number">1.7.3.3.</span> <span class="nav-text">ValueContext</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.7.4.</span> <span class="nav-text">通用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WithCancel"><span class="nav-number">1.7.4.1.</span> <span class="nav-text">WithCancel()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#propagateCancel-%E5%88%86%E6%9E%90"><span class="nav-number">1.7.4.2.</span> <span class="nav-text">propagateCancel 分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#value-%E5%88%86%E6%9E%90%EF%BC%9B"><span class="nav-number">1.7.4.3.</span> <span class="nav-text">value() 分析；</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">1.8.</span> <span class="nav-text">切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.8.1.</span> <span class="nav-text">切片与数组的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9"><span class="nav-number">1.8.2.</span> <span class="nav-text">切片的动态扩容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E9%9D%9E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">1.8.3.</span> <span class="nav-text">切片非线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84Append%E6%93%8D%E4%BD%9C"><span class="nav-number">1.8.4.</span> <span class="nav-text">切片的Append操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%8C%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8"><span class="nav-number">1.9.</span> <span class="nav-text">Map数据结构，并发安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84%E5%86%85%E9%83%A8%E6%BA%90%E7%A0%81"><span class="nav-number">1.9.1.</span> <span class="nav-text">Map的内部源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84rehash"><span class="nav-number">1.9.2.</span> <span class="nav-text">Map的rehash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hash%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.9.2.1.</span> <span class="nav-text">hash冲突解决方案</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-%E8%BF%9B%E9%98%B6"><span class="nav-number">1.</span> <span class="nav-text">Go 进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-GC"><span class="nav-number">1.1.</span> <span class="nav-text">Go GC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">1.2.</span> <span class="nav-text">三色标记-垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#STW"><span class="nav-number">1.2.1.</span> <span class="nav-text">STW</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C"><span class="nav-number">1.2.2.</span> <span class="nav-text">混合写屏障</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-GMP"><span class="nav-number">1.3.</span> <span class="nav-text">Go GMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">1.4.</span> <span class="nav-text">Go内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.4.1.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%BB%84%E4%BB%B6"><span class="nav-number">1.4.2.</span> <span class="nav-text">内存管理组件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mcache"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">mcache</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.4.3.</span> <span class="nav-text">内存分配的基本原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">CSP模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CSP%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.5.1.</span> <span class="nav-text">CSP模型核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Goroutines"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">Goroutines</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Channels"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">Channels</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%81%BF%E5%85%8D%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.2.</span> <span class="nav-text">常见问题与避免方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">问题一：数据竞争</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BA%8C%EF%BC%9A%E6%AD%BB%E9%94%81"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">问题二：死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%89%EF%BC%9Agoroutine%E6%B3%84%E6%BC%8F"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">问题三：goroutine泄漏</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chan-%E5%8E%9F%E7%90%86"><span class="nav-number">1.6.</span> <span class="nav-text">chan 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Chan%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.6.1.</span> <span class="nav-text">Chan数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chan-%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.6.2.</span> <span class="nav-text">chan 的工作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chan-%E5%85%B3%E9%97%AD%E6%97%B6%E7%9A%84%E8%AF%BB"><span class="nav-number">1.6.3.</span> <span class="nav-text">chan 关闭时的读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chan%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E9%97%AE%E9%A2%98"><span class="nav-number">1.6.4.</span> <span class="nav-text">chan的内存泄漏问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chan-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="nav-number">1.6.5.</span> <span class="nav-text">chan 使用规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#context-%E7%BB%93%E6%9E%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.7.</span> <span class="nav-text">context 结构原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.7.1.</span> <span class="nav-text">Context 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#canceler%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.7.2.</span> <span class="nav-text">canceler接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.7.3.</span> <span class="nav-text">Context 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#EmptyCtx"><span class="nav-number">1.7.3.1.</span> <span class="nav-text">EmptyCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cancelCtx"><span class="nav-number">1.7.3.2.</span> <span class="nav-text">cancelCtx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ValueContext"><span class="nav-number">1.7.3.3.</span> <span class="nav-text">ValueContext</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.7.4.</span> <span class="nav-text">通用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WithCancel"><span class="nav-number">1.7.4.1.</span> <span class="nav-text">WithCancel()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#propagateCancel-%E5%88%86%E6%9E%90"><span class="nav-number">1.7.4.2.</span> <span class="nav-text">propagateCancel 分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#value-%E5%88%86%E6%9E%90%EF%BC%9B"><span class="nav-number">1.7.4.3.</span> <span class="nav-text">value() 分析；</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">1.8.</span> <span class="nav-text">切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.8.1.</span> <span class="nav-text">切片与数组的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9"><span class="nav-number">1.8.2.</span> <span class="nav-text">切片的动态扩容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E9%9D%9E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">1.8.3.</span> <span class="nav-text">切片非线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84Append%E6%93%8D%E4%BD%9C"><span class="nav-number">1.8.4.</span> <span class="nav-text">切片的Append操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%8C%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8"><span class="nav-number">1.9.</span> <span class="nav-text">Map数据结构，并发安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84%E5%86%85%E9%83%A8%E6%BA%90%E7%A0%81"><span class="nav-number">1.9.1.</span> <span class="nav-text">Map的内部源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84%E6%89%A9%E5%AE%B9"><span class="nav-number">1.9.2.</span> <span class="nav-text">Map的扩容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map%E7%9A%84rehash"><span class="nav-number">1.9.3.</span> <span class="nav-text">Map的rehash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Rehash%E8%A7%A6%E5%8F%91%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.9.3.1.</span> <span class="nav-text">Rehash触发条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Rehash%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.9.3.2.</span> <span class="nav-text">Rehash步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hash%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.9.3.3.</span> <span class="nav-text">hash冲突解决方案</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -566,7 +594,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

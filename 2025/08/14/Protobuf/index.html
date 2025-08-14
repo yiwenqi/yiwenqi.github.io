@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="深入理解ProtoBuf原理与工程实践ProtoBuf作为一种跨平台、语言无关、可扩展的序列化数据结构的方法，已经广泛用于网络传输过程中的数据交换与存储； 文章包含以下内容：  理解Protobuf概述 ProtoBuf如何编码 ProtoBuf如何序列化 实践  一、什么是ProtoBuf protobuf 是一种跨语言，跨平台，可扩展的序列化数据结构的方法，用于网络传输过程中的数据交换以及存储">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Protobuf">
+<meta property="og:url" content="http://example.com/2025/08/14/Protobuf/index.html">
+<meta property="og:site_name" content="Yiwenqi&#39;s Blog">
+<meta property="og:description" content="深入理解ProtoBuf原理与工程实践ProtoBuf作为一种跨平台、语言无关、可扩展的序列化数据结构的方法，已经广泛用于网络传输过程中的数据交换与存储； 文章包含以下内容：  理解Protobuf概述 ProtoBuf如何编码 ProtoBuf如何序列化 实践  一、什么是ProtoBuf protobuf 是一种跨语言，跨平台，可扩展的序列化数据结构的方法，用于网络传输过程中的数据交换以及存储">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/protoBuffer%E5%BA%8F%E5%88%97%E5%8C%96%E7%B1%BB%E5%9E%8B2.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/protocol-T-V%E5%AD%98%E5%82%A8.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/protocol-T-L-V%E5%AD%98%E5%82%A82.jpg">
+<meta property="article:published_time" content="2025-08-14T07:44:52.673Z">
+<meta property="article:modified_time" content="2025-08-14T07:44:49.341Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/protoBuffer%E5%BA%8F%E5%88%97%E5%8C%96%E7%B1%BB%E5%9E%8B2.jpg">
+
+<link rel="canonical" href="http://example.com/2025/08/14/Protobuf/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Protobuf | Yiwenqi's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Yiwenqi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/08/14/Protobuf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiwenqi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Protobuf
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-08-14 15:44:52 / 修改时间：15:44:49" itemprop="dateCreated datePublished" datetime="2025-08-14T15:44:52+08:00">2025-08-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解ProtoBuf原理与工程实践"><a href="#深入理解ProtoBuf原理与工程实践" class="headerlink" title="深入理解ProtoBuf原理与工程实践"></a>深入理解ProtoBuf原理与工程实践</h1><p>ProtoBuf作为一种<strong>跨平台、语言无关、可扩展的序列化数据结构的方法</strong>，已经广泛用于网络传输过程中的数据交换与存储；</p>
+<p>文章包含以下内容：</p>
+<ol>
+<li>理解<code>Protobuf</code>概述</li>
+<li><code>ProtoBuf</code>如何编码</li>
+<li><code>ProtoBuf</code>如何序列化</li>
+<li>实践</li>
+</ol>
+<h1 id="一、什么是ProtoBuf"><a href="#一、什么是ProtoBuf" class="headerlink" title="一、什么是ProtoBuf"></a>一、什么是ProtoBuf</h1><ul>
+<li><p><code>protobuf</code> 是一种跨语言，跨平台，可扩展的序列化数据结构的方法，用于网络传输过程中的数据交换以及存储；</p>
+<p>在网络传输过程当中除了<code>ProtoBuf</code> 数据结构我们还有<code>json，xml</code>两种高效的数据存储形式，但这两种数据结构的序列号以及反序列化的性能略低于<code>ProtoBuf</code>; 并且使用<code>Protobuf</code>序列化的数据占用空间更小；</p>
+</li>
+</ul>
+<h1 id="二、为什么是选择ProtoBuf"><a href="#二、为什么是选择ProtoBuf" class="headerlink" title="二、为什么是选择ProtoBuf"></a>二、为什么是选择ProtoBuf</h1><p>  现有框架中除了<code>Protobuf</code> 还有 <code>thrift</code>也可以作为传输层的协议进行数据传输；那为什么选择<code>ProtoBuf</code>? 我们先看<code>ProtoBuf</code>&amp;<code>thrift</code>的区别：</p>
+<table>
+<thead>
+<tr>
+<th align="center">维度</th>
+<th align="center">Protobuf 优点</th>
+<th align="center">Thrift 优点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>序列化性能</strong></td>
+<td align="center">非常高效，序列化后数据体积小</td>
+<td align="center">性能也很好，但通常略逊于 Protobuf</td>
+</tr>
+<tr>
+<td align="center"><strong>IDL 语法</strong></td>
+<td align="center">简洁，结构清晰（<code>.proto</code> 文件）</td>
+<td align="center">功能更丰富，支持异常、默认值、常量等（<code>.thrift</code> 文件）</td>
+</tr>
+<tr>
+<td align="center"><strong>RPC 支持</strong></td>
+<td align="center">原生不支持 RPC，但可与 gRPC 配合实现</td>
+<td align="center">自带完整的 RPC 框架，包括传输层、协议层</td>
+</tr>
+<tr>
+<td align="center"><strong>多语言支持</strong></td>
+<td align="center">官方支持主流语言（但冷门语言支持有限）</td>
+<td align="center">支持语言更多，适用于异构系统</td>
+</tr>
+<tr>
+<td align="center"><strong>兼容性</strong></td>
+<td align="center">向后兼容好：字段支持 optional 和 repeated</td>
+<td align="center">也支持向后兼容，但字段处理更复杂一点</td>
+</tr>
+<tr>
+<td align="center"><strong>文档生成</strong></td>
+<td align="center">官方工具支持较少</td>
+<td align="center">工具生态更强，如 Thrift compiler 可自动生成服务端与客户端代码</td>
+</tr>
+<tr>
+<td align="center"><strong>开发复杂度</strong></td>
+<td align="center">比较简单，尤其适合只做数据结构序列化的场景</td>
+<td align="center">学习曲线略陡，适合需要完整 RPC 系统的复杂业务场景</td>
+</tr>
+<tr>
+<td align="center"><strong>生态成熟度</strong></td>
+<td align="center">与 gRPC 一起生态非常成熟，广泛用于 Kubernetes、Istio 等云原生技术</td>
+<td align="center">生态完善但略显陈旧，新项目采用相对较少</td>
+</tr>
+</tbody></table>
+<p>从上述看 <code>ProtoBuf</code> 相比 <code>thrift</code> 虽然单独相比 <code>thrift</code> 的功能更加丰富，但<code>ProtoBuf</code> 与 <code>grpc</code> 配合使用也有丰富强大的功能；且 <code>ProtoBuf</code> 性能更好序列化后的体积更小，生态更加成熟；</p>
+<h1 id="三、如何使用-ProtoBuf"><a href="#三、如何使用-ProtoBuf" class="headerlink" title="三、如何使用 ProtoBuf"></a>三、如何使用 ProtoBuf</h1><h2 id="环境部署-amp-使用方法"><a href="#环境部署-amp-使用方法" class="headerlink" title="环境部署&amp;使用方法"></a>环境部署&amp;使用方法</h2><p>1.1 安装<code>ProtoBuf</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装 protoc</span></span><br><span class="line">brew install protoc</span><br></pre></td></tr></table></figure>
+
+<p>1.2 安装对应语言的编译器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">protoc 会调用 protoc-gen-go</span></span><br><span class="line">go install google.golang.org/protobuf/cmd/protoc-gen-go@latest</span><br></pre></td></tr></table></figure>
+
+<p>1.3 编写一个<code>protoc idl</code>文件</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">option</span> go_package = <span class="string">&quot;google.golang.org/grpc/examples/helloworld/helloworld&quot;</span>;</span><br><span class="line"><span class="keyword">option</span> java_multiple_files = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">option</span> java_package = <span class="string">&quot;io.grpc.examples.helloworld&quot;</span>;</span><br><span class="line"><span class="keyword">option</span> java_outer_classname = <span class="string">&quot;HelloWorldProto&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> helloworld;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The greeting service definition.</span></span><br><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="comment">// Sends a greeting</span></span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloReply) </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The request message containing the user&#x27;s name.</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloRequest</span> &#123;</span><br><span class="line">  <span class="type">string</span> name = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The response message containing the greetings</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloReply</span> &#123;</span><br><span class="line">  <span class="type">string</span> message = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>1.4 调用<code>protoc</code> 生成<code>.go</code>数据结构</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 生成 example.pb.<span class="keyword">go</span></span><br><span class="line">protoc --go_out=.  example.proto</span><br></pre></td></tr></table></figure>
+
+<p>1.5 若需要生成<code>grpc</code>调用方法</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=. --go-grpc_out=. example.proto</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="实战演示"><a href="#实战演示" class="headerlink" title="实战演示"></a>实战演示</h2><p>2.1 Go代码（pb文件按照上述示例生成）</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;google.golang.org/protobuf/proto&quot;</span></span><br><span class="line">	pd <span class="string">&quot;testAll/google.golang.org/grpc/examples/helloworld/helloworld&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	pdObj := pd.HelloRequest&#123;Name: <span class="string">&quot;hello&quot;</span>&#125;</span><br><span class="line">	data, err := proto.Marshal(&amp;pdObj)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="四、ProtoBuf-工作原理"><a href="#四、ProtoBuf-工作原理" class="headerlink" title="四、ProtoBuf 工作原理"></a>四、ProtoBuf 工作原理</h1><p>​    序列化&#x2F;反序列化：把数据对象转换成二进制&#x2F;把二进制数据转换为数据对象；</p>
+<p>​    序列化&amp;反序列化属于通讯协议的一部分，在通讯协议的通常在TCP&#x2F;IP模型的应用层，在OSI七层模型的表示层中；</p>
+<p>   在 <code>go</code> 中<code>ProtoBuf</code> 有以下类型：这些类型分别用不同的编码</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"> BoolKind     Kind = <span class="number">8</span></span><br><span class="line">EnumKind     Kind = <span class="number">14</span></span><br><span class="line">Int32Kind    Kind = <span class="number">5</span></span><br><span class="line">Sint32Kind   Kind = <span class="number">17</span></span><br><span class="line">Uint32Kind   Kind = <span class="number">13</span></span><br><span class="line">Int64Kind    Kind = <span class="number">3</span></span><br><span class="line">Sint64Kind   Kind = <span class="number">18</span></span><br><span class="line">Uint64Kind   Kind = <span class="number">4</span></span><br><span class="line">Sfixed32Kind Kind = <span class="number">15</span></span><br><span class="line">Fixed32Kind  Kind = <span class="number">7</span></span><br><span class="line">FloatKind    Kind = <span class="number">2</span></span><br><span class="line">Sfixed64Kind Kind = <span class="number">16</span></span><br><span class="line">Fixed64Kind  Kind = <span class="number">6</span></span><br><span class="line">DoubleKind   Kind = <span class="number">1</span></span><br><span class="line">StringKind   Kind = <span class="number">9</span></span><br><span class="line">BytesKind    Kind = <span class="number">12</span></span><br><span class="line">MessageKind  Kind = <span class="number">11</span></span><br><span class="line">GroupKind    Kind = <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="PortoBuf-序列化"><a href="#PortoBuf-序列化" class="headerlink" title="PortoBuf 序列化"></a><code>PortoBuf</code> 序列化</h2><p>3.1 <code>ProtoBuf</code> 序列号的数据类型</p>
+<ul>
+<li>Protcol Buffer 对不同的数据类型有不同的序列化方式（编码方式&amp;存储方式）</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/protoBuffer%E5%BA%8F%E5%88%97%E5%8C%96%E7%B1%BB%E5%9E%8B2.jpg" alt="image-20230628231851925"></p>
+<p>3.2 Varint 编码方式（Write Type &#x3D; 1）</p>
+<p>​    使用Varint编码多用于数字类型数据，此时使用变长的编码方式（1-10个字节）；</p>
+<ul>
+<li><p>长度：1-10个字节 </p>
+</li>
+<li><p>原理：根据不同数字类型使用不同的编码方式（直接返回无符号整型或者zigzag编码后的数据）</p>
+</li>
+<li><p>作用：通过减少表示数字的字节数从而进行数据压缩</p>
+<ul>
+<li>对于 <code>int32</code> 类型的数字，一般需要 4个字节 表示； 若采用  <code>Varint</code>编码，对于很小的 <code>int32</code> 类型 数字，则可以用 1个字节 来表示；</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>数字</th>
+<th>编码后占用字节数（Varint）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0 ~ 127</td>
+<td>1 字节</td>
+</tr>
+<tr>
+<td>128 ~ 16,383</td>
+<td>2 字节</td>
+</tr>
+<tr>
+<td>16,384 ~ 2M+</td>
+<td>3 字节</td>
+</tr>
+<tr>
+<td>越大</td>
+<td>越多字节</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>源码分析：</p>
+<ul>
+<li>判断v是否小于 1&lt;&lt;7 (127)，1&lt;&lt;14 (16383) …….</li>
+<li>每个字节最多存 7 位有效数据（低 7 位），高位（MSB）是继续标志位（1 表示还有更多，0 表示结束）。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Varint 编码源码分析</span></span><br><span class="line"><span class="comment">// AppendVarint appends v to b as a varint-encoded uint64.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AppendVarint</span><span class="params">(b []<span class="type">byte</span>, v <span class="type">uint64</span>)</span></span> []<span class="type">byte</span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">7</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b, <span class="type">byte</span>(v))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">14</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">7</span>))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">21</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">14</span>))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">28</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">14</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">21</span>))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">35</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">14</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">21</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">28</span>))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">42</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">14</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">21</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">28</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">35</span>))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">49</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">14</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">21</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">28</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">35</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">42</span>))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">56</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">14</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">21</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">28</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">35</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">42</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">49</span>))</span><br><span class="line">	<span class="keyword">case</span> v &lt; <span class="number">1</span>&lt;&lt;<span class="number">63</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">14</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">21</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">28</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">35</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">42</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">49</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>(v&gt;&gt;<span class="number">56</span>))</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		b = <span class="built_in">append</span>(b,</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">0</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">7</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">14</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">21</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">28</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">35</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">42</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">49</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="type">byte</span>((v&gt;&gt;<span class="number">56</span>)&amp;<span class="number">0x7f</span>|<span class="number">0x80</span>),</span><br><span class="line">			<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// zigZag源码分析</span></span><br><span class="line"><span class="comment">//	Output: &#123;…,  5,  3,  1,  0,  2,  4,  6, …&#125;</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">EncodeZigZag</span><span class="params">(x <span class="type">int64</span>)</span></span> <span class="type">uint64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="type">uint64</span>(x&lt;&lt;<span class="number">1</span>) ^ <span class="type">uint64</span>(x&gt;&gt;<span class="number">63</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这样的编码方式使得数据越小占用空间越小，程序中大部分情况都是小数情况，因此能节约一部分存储空间；</li>
+<li>同样这样的编码方式也使得数据计算简单，高性能</li>
+</ul>
+<p>3.3 ZigZag编码方式 </p>
+<ul>
+<li>以上Varint编码在负数时二进制特别大，例如 -300：int(32) &#x3D;&gt; 11111111 11111111 11111110 11010100</li>
+<li>因此此时需要用到四个字节；占用空间较大</li>
+<li>换成ZigZag后将负数转换为正数；</li>
+</ul>
+<p>ZigZag源码</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//	Input:  &#123;…, -3, -2, -1,  0, +1, +2, +3, …&#125;</span></span><br><span class="line"><span class="comment">//	Output: &#123;…,  5,  3,  1,  0,  2,  4,  6, …&#125;</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">EncodeZigZag</span><span class="params">(x <span class="type">int64</span>)</span></span> <span class="type">uint64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="type">uint64</span>(x&lt;&lt;<span class="number">1</span>) ^ <span class="type">uint64</span>(x&gt;&gt;<span class="number">63</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将负数转换为正数：正负数对称</span></span><br><span class="line"><span class="number">0</span>  →  <span class="number">0</span></span><br><span class="line"><span class="number">-1</span> →  <span class="number">1</span></span><br><span class="line"> <span class="number">1</span> →  <span class="number">2</span></span><br><span class="line"><span class="number">-2</span> →  <span class="number">3</span></span><br><span class="line"> <span class="number">2</span> →  <span class="number">4</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<p>3.4 二进制数据流</p>
+<ul>
+<li><p>对于变长varint数据类型使用的是T-V的二进制存储；</p>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/protocol-T-V%E5%AD%98%E5%82%A8.jpg" alt="protocol-T-V存储"></p>
+</li>
+<li><p>对于字符串对象类型的数据采用的是T-L-V的二进制存储形式</p>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/yiwenqi/cloudimg/main/uPic/protocol-T-L-V%E5%AD%98%E5%82%A82.jpg" alt="protocol-T-L-V存储2"></p>
+<p>*由于ProtoBuf使用以上结构进行存储使得数据之间非常紧凑；</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/03/24/Kafka/" rel="prev" title="Kafka 进阶">
+      <i class="fa fa-chevron-left"></i> Kafka 进阶
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ProtoBuf%E5%8E%9F%E7%90%86%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">深入理解ProtoBuf原理与工程实践</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AFProtoBuf"><span class="nav-number">2.</span> <span class="nav-text">一、什么是ProtoBuf</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E9%80%89%E6%8B%A9ProtoBuf"><span class="nav-number">3.</span> <span class="nav-text">二、为什么是选择ProtoBuf</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-ProtoBuf"><span class="nav-number">4.</span> <span class="nav-text">三、如何使用 ProtoBuf</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2-amp-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">环境部署&amp;使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%88%98%E6%BC%94%E7%A4%BA"><span class="nav-number">4.2.</span> <span class="nav-text">实战演示</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81ProtoBuf-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">四、ProtoBuf 工作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PortoBuf-%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">5.1.</span> <span class="nav-text">PortoBuf 序列化</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
